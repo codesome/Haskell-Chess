@@ -1,0 +1,1 @@
+module VerifyMove.King where
