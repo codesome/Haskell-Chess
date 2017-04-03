@@ -1,6 +1,7 @@
 module VerifyMove.Queen where
 
 import Types
+import BoardUtils
 
 queenTestState :: GameState 
 queenTestState = GameState {

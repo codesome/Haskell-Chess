@@ -1,6 +1,7 @@
 module VerifyMove.Knight where
 
 import Types
+import BoardUtils
 
 knightTestState :: GameState 
 knightTestState = GameState {

@@ -1,6 +1,7 @@
 module VerifyMove.Pawn where
 
 import Types
+import BoardUtils
 
 pawnTestState :: GameState 
 pawnTestState = GameState {

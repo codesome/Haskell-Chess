@@ -1,6 +1,7 @@
 module VerifyMove.Bishop where
 
 import Types
+import BoardUtils
 
 bishopTestState :: GameState 
 bishopTestState = GameState {

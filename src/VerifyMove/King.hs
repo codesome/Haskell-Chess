@@ -1,6 +1,7 @@
 module VerifyMove.King where
 
 import Types
+import BoardUtils
 
 kingTestState :: GameState 
 kingTestState = GameState {
@@ -21,3 +22,4 @@ kingTestState = GameState {
 }
 
 -- verifyMove :: GameState -> Int -> Int -> Bool
+

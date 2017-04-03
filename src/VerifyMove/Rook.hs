@@ -1,6 +1,7 @@
 module VerifyMove.Rook where
 
 import Types
+import BoardUtils
 
 rookTestState :: GameState 
 rookTestState = GameState {

@@ -82,3 +82,10 @@ isInProgress (GameState {
     whoWasInCheck=wwic, 
     inProgress=ip
     }) = ip
+
+getSquareAt :: GameState -> Int -> Square
+getSquareAt state index =
+    let board = getBoard state
+        row = index `div` 8
+        col = index `mod` 8
+    in ((board !! row) !! col) 
