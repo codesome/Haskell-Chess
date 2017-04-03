@@ -14,8 +14,8 @@ getSquareType (Piece pc pt) = pt
 
 getPlayerStr :: Player -> String
 getPlayerStr p
-    | p==PlayerW = "PlayerW"
-    | otherwise = "PlayerB" 
+    | p == PlayerW = "PlayerW"
+    | otherwise    = "PlayerB"
 
 getColorStr :: PColor -> String
 getColorStr pc
@@ -40,46 +40,46 @@ describeSquare (Empty) = "Empty Square"
 
 getBoard :: GameState -> Board
 getBoard (GameState {
-    board=b, 
-    turn=t, 
-    wasCheck=wc, 
-    whoWasInCheck=wwic, 
+    board=b,
+    turn=t,
+    wasCheck=wc,
+    whoWasInCheck=wwic,
     inProgress=ip
     }) = b
 
 getTurn :: GameState -> Player
 getTurn (GameState {
-    board=b, 
-    turn=t, 
-    wasCheck=wc, 
-    whoWasInCheck=wwic, 
+    board=b,
+    turn=t,
+    wasCheck=wc,
+    whoWasInCheck=wwic,
     inProgress=ip
     }) = t
 
 getWasCheck :: GameState -> Bool
 getWasCheck (GameState {
-    board=b, 
-    turn=t, 
-    wasCheck=wc, 
-    whoWasInCheck=wwic, 
+    board=b,
+    turn=t,
+    wasCheck=wc,
+    whoWasInCheck=wwic,
     inProgress=ip
     }) = wc
 
 getWhoWasInCheck :: GameState -> Maybe Player
 getWhoWasInCheck (GameState {
-    board=b, 
-    turn=t, 
-    wasCheck=wc, 
-    whoWasInCheck=wwic, 
+    board=b,
+    turn=t,
+    wasCheck=wc,
+    whoWasInCheck=wwic,
     inProgress=ip
     }) = wwic
 
 isInProgress :: GameState -> Bool
 isInProgress (GameState {
-    board=b, 
-    turn=t, 
-    wasCheck=wc, 
-    whoWasInCheck=wwic, 
+    board=b,
+    turn=t,
+    wasCheck=wc,
+    whoWasInCheck=wwic,
     inProgress=ip
     }) = ip
 
@@ -88,4 +88,4 @@ getSquareAt state index =
     let board = getBoard state
         row = index `div` 8
         col = index `mod` 8
-    in ((board !! row) !! col) 
+    in ((board !! row) !! col)
