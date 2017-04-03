@@ -1,12 +1,42 @@
-module BoardUtils (
-    getBoard,
-    getTurn,
-    getWasCheck,
-    getWhoWasInCheck,
-    isInProgress
-) where
+module BoardUtils where
 
 import Types
+
+{- Square utils -}
+
+getSquareColor :: Square -> PColor
+getSquareColor (Piece pc pt) = pc
+
+getSquareType :: Square -> PType
+getSquareType (Piece pc pt) = pt
+
+{- Getting string utils -}
+
+getPlayerStr :: Player -> String
+getPlayerStr p
+    | p==PlayerW = "PlayerW"
+    | otherwise = "PlayerB" 
+
+getColorStr :: PColor -> String
+getColorStr pc
+    | pc==White = "White"
+    | otherwise = "Black"
+
+getPTypeStr :: PType -> String
+getPTypeStr pt
+    | pt==Bishop = "Bishop"
+    | pt==King = "King"
+    | pt==Knight = "Knight"
+    | pt==Pawn = "Pawn"
+    | pt==Queen = "Queen"
+    | pt==Rook = "Rook"
+    | otherwise = ""
+
+describeSquare :: Square -> String
+describeSquare (Piece pc pt) = (getColorStr pc) ++ " " ++ (getPTypeStr pt)
+describeSquare (Empty) = "Empty Square"
+
+{- GameState utils -}
 
 getBoard :: GameState -> Board
 getBoard (GameState {

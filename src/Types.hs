@@ -3,67 +3,62 @@ module Types where
 -- Board used in game
 type Board = [[Square]]
 
--- Single Square in the board
-type Square = Maybe Piece
-
 {- Piece attributes in a square -}
 
 -- Single piece
-data Piece = Piece PColor PType deriving (Show)
+data Square = Piece PColor PType | Empty deriving (Show,Eq)
 
 -- Color of the piece
-data PColor = White | Black deriving (Show)
+data PColor = White | Black deriving (Show,Eq)
 
 -- Type of the piece
-data PType = Bishop | King | Knight | Pawn | Queen | Rook deriving (Show)
+data PType = Bishop | King | Knight | Pawn | Queen | Rook deriving (Show,Eq)
 
 -- Players
-data Player = PlayerW | PlayerB deriving (Show)
+data Player = PlayerW | PlayerB deriving (Show,Eq)
 
-wBishop :: Maybe Piece
-wBishop = Just (Piece White Bishop)
+-- Short hand notations for convienience
+wBishop :: Square
+wBishop = (Piece White Bishop)
 
-wKing :: Maybe Piece
-wKing = Just (Piece White King)
+wKing :: Square
+wKing = (Piece White King)
 
-wKnight :: Maybe Piece
-wKnight = Just (Piece White Knight)
+wKnight :: Square
+wKnight = (Piece White Knight)
 
-wPawn :: Maybe Piece
-wPawn = Just (Piece White Pawn)
+wPawn :: Square
+wPawn = (Piece White Pawn)
 
-wQueen :: Maybe Piece
-wQueen = Just (Piece White Queen)
+wQueen :: Square
+wQueen = (Piece White Queen)
 
-wRook :: Maybe Piece
-wRook = Just (Piece White Rook)
+wRook :: Square
+wRook = (Piece White Rook)
 
-bBishop :: Maybe Piece
-bBishop = Just (Piece Black Bishop)
+bBishop :: Square
+bBishop = (Piece Black Bishop)
 
-bKing :: Maybe Piece
-bKing = Just (Piece Black King)
+bKing :: Square
+bKing = (Piece Black King)
 
-bKnight :: Maybe Piece
-bKnight = Just (Piece Black Knight)
+bKnight :: Square
+bKnight = (Piece Black Knight)
 
-bPawn :: Maybe Piece
-bPawn = Just (Piece Black Pawn)
+bPawn :: Square
+bPawn = (Piece Black Pawn)
 
-bQueen :: Maybe Piece
-bQueen = Just (Piece Black Queen)
+bQueen :: Square
+bQueen = (Piece Black Queen)
 
-bRook :: Maybe Piece
-bRook = Just (Piece Black Rook)
-
-empty :: Maybe Piece
-empty = Nothing
+bRook :: Square
+bRook = (Piece Black Rook)
 
 -- State data used during the game
 data GameState = GameState {
     board :: Board, -- 2D list of Square
     turn :: Player, -- PlayerW/PlayerB depending on whose turn it is next
     wasCheck :: Bool, -- True if it was a check before this move
-    whoWasInCheck :: Maybe Player, -- PlayerW/PlayerB/Nothing
+    whoWasInCheck :: Maybe Player, -- Either PlayerW/PlayerB on check or Nothing
     inProgress :: Bool -- True if the game is still on
 } deriving (Show)

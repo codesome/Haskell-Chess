@@ -10,10 +10,10 @@ initialGameBoard :: Board
 initialGameBoard = [
         [bRook, bKnight, bBishop, bQueen, bKing, bBishop, bKnight, bRook],
         [bPawn, bPawn, bPawn, bPawn, bPawn, bPawn, bPawn, bPawn],
-        [Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing],
-        [Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing],
-        [Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing],
-        [Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing],
+        [Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty],
+        [Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty],
+        [Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty],
+        [Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty],
         [wPawn, wPawn, wPawn, wPawn, wPawn, wPawn, wPawn, wPawn],
         [wRook, wKnight, wBishop, wQueen, wKing, wBishop, wKnight, wRook]
     ]
