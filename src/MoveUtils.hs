@@ -97,19 +97,19 @@ setSquareAt (GameState { board=board, turn=t, wasCheck=wc, whoWasInCheck=wwic, i
         (r1,_:r2) = splitAt row board
         (c1,_:c2) = splitAt col (board!!row)
 
-        newState = GameState { 
-            board= (r1 ++ (c1++(square:c2)):r2) , 
-            turn=t, 
-            wasCheck=wc, 
-            whoWasInCheck=wwic, 
-            inProgress=ip 
+        newState = GameState {
+            board= (r1 ++ (c1++(square:c2)):r2) ,
+            turn=t,
+            wasCheck=wc,
+            whoWasInCheck=wwic,
+            inProgress=ip
         }
 
     in newState
 
 -- Move a piece from 'from' to 'to' index
 moveFromTo :: GameState -> Int -> Int -> GameState
-moveFromTo state from to = 
+moveFromTo state from to =
     let
        startSquare = getSquareAt state from
        intermediateState = setSquareAt state from (Empty) -- making from empty
@@ -123,7 +123,7 @@ togglePlayer (GameState {
         wasCheck=wc,
         whoWasInCheck=wwic,
         inProgress=ip
-    }) = 
+    }) =
         if player == PlayerW
             then (GameState {
                 board=b,
@@ -132,7 +132,7 @@ togglePlayer (GameState {
                 whoWasInCheck=wwic,
                 inProgress=ip
             })
-            
+
             else (GameState {
                 board=b,
                 turn=PlayerW,

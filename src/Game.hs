@@ -13,7 +13,7 @@ gameLoop state = do
     putStr (getPlayerStr (getTurn state))
     putStrLn " Move"
     putStr "From: "
-    
+
     fromStr <- getLine
     let from = read fromStr :: Int
 
@@ -24,18 +24,18 @@ gameLoop state = do
     if (verifyMove state from to)
         then do
             let newState = togglePlayer (moveFromTo state from to)
-            
+
             if True -- TODO: Check for check or checkmate
                 then
                     -- TODO: Take actions for check or checkmate
                     gameLoop newState
-                else    
+                else
                     gameLoop newState
 
 
-        else do 
+        else do
             putStrLn "Invalid Move!"
             gameLoop state
 
 startGame :: IO ()
-startGame = gameLoop initialGameState
+startGame = gameLoop initialGamStat
