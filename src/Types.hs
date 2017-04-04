@@ -9,7 +9,7 @@ type Board = [[Square]]
 data Square = Piece PColor PType | Empty deriving (Show,Eq)
 
 -- Color of the piece
-data PColor = White | Black deriving (Show,Eq)
+data PColor = White | Black | NoColor deriving (Show,Eq)
 
 -- Type of the piece
 data PType = Bishop | King | Knight | Pawn | Queen | Rook deriving (Show,Eq)

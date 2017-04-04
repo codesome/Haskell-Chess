@@ -31,48 +31,6 @@ sbl = do
     putStrLn "| 56 | 57 | 58 | 59 | 60 | 61 | 62 | 63 |"
     putStrLn "+----+----+----+----+----+----+----+----+"
 
--- To check moves of PlayerW (will be removed later)
-mtsw :: GameState
-mtsw = GameState {
-    board = [
-        [bRook, bKnight, bBishop, bQueen, bKing, bBishop, bKnight, bRook],
-        [Empty, bPawn,   bPawn,   Empty,  bPawn, Empty,   bPawn,   bPawn],
-        [Empty, Empty,   Empty,   Empty,  Empty, Empty,   Empty,   Empty],
-        [Empty, Empty,   Empty,   Empty,  Empty, Empty,   Empty,   Empty],
-        [Empty, Empty,   Empty,   Empty,  Empty, Empty,   Empty,   Empty],
-        [Empty, Empty,   Empty,   Empty,  Empty, Empty,   Empty,   Empty],
-        [Empty, wPawn,   wPawn,   Empty,  wPawn, Empty,   wPawn,   wPawn],
-        [wRook, wKnight, wBishop, wQueen, wKing, wBishop, wKnight, wRook]
-    ],
-    turn = PlayerW,
-    wasCheck = False,
-    whoWasInCheck = Nothing,
-    inProgress = True,
-    whiteKing=60, 
-    blackKing=4 
-}
-
--- To check moves of PlayerB (will be removed later)
-mtsb :: GameState
-mtsb = GameState {
-    board = [
-        [bRook, bKnight, bBishop, bQueen, bKing, bBishop, bKnight, bRook],
-        [Empty, bPawn,   bPawn,   Empty,  bPawn, Empty,   bPawn,   bPawn],
-        [Empty, Empty,   Empty,   Empty,  Empty, Empty,   Empty,   Empty],
-        [Empty, Empty,   Empty,   Empty,  Empty, Empty,   Empty,   Empty],
-        [Empty, Empty,   Empty,   Empty,  Empty, Empty,   Empty,   Empty],
-        [Empty, Empty,   Empty,   Empty,  Empty, Empty,   Empty,   Empty],
-        [Empty, wPawn,   wPawn,   Empty,  wPawn, Empty,   wPawn,   wPawn],
-        [wRook, wKnight, wBishop, wQueen, wKing, wBishop, wKnight, wRook]
-    ],
-    turn = PlayerB,
-    wasCheck = False,
-    whoWasInCheck = Nothing,
-    inProgress = True,
-    whiteKing=60, 
-    blackKing=4 
-}
-
 -- Checks if a move is valid
 verifyMove :: GameState -> Int -> Int -> Bool
 verifyMove state start end
@@ -88,7 +46,12 @@ verifyMove state start end
         ptype = getSquareType square
         pcolor = getSquareColor square
         turn = getTurn state
-        validMove =  (start>=0 && start<=63 && end>=0 && end<=63) && (((turn==PlayerW) && (pcolor==White)) || ((turn==PlayerB) && (pcolor==Black)))
+        validMove =  (start>=0 && start<=63 && end>=0 && end<=63) 
+                    && (
+                        ((turn==PlayerW) && (pcolor==White)) 
+                        || ((turn==PlayerB) && (pcolor==Black))
+                       )
+                    && (pcolor /= (getSquareColor (getSquareAt state end)))
 
 -- Move a piece from 'from' to 'to' index
 moveFromTo :: GameState -> Int -> Int -> GameState

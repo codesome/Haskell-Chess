@@ -9,36 +9,33 @@ verifyMove state startCell endCell = do
   let   colStart = startCell `mod` 8
   let   rowEnd   = endCell   `div` 8
   let   colEnd   = endCell   `mod` 8
-  if (abs(rowStart-rowEnd)`div`(abs(colStart-colEnd))) == 1
-    then do
-      if startCell > endCell
-        then do
-          if checkDiagonalEmpty state (startCell-9) (endCell+9) == True
-            then True
-          else False
-      else if endCell > startCell
-        then do
-        if checkDiagonalEmpty state (startCell+9) (endCell-9) == True
-          then True
-        else False
-      else False
-  else False
+  if (startCell==endCell) || ( (abs (rowStart-rowEnd))/=(abs (colStart-colEnd)) )
+    then False
+    else 
+      if ((rowStart-rowEnd) `div` (colEnd-colStart)) == 1
+        then 
+          (
+            (startCell > endCell) 
+            && (foldr foldfun True  (map isEmpty (map (getSquareAt state) [(startCell-7),(startCell-14)..(endCell+7)])))
+          )
+          || 
+          (
+            (startCell < endCell) 
+            && (foldr foldfun True (map isEmpty (map (getSquareAt state) [(endCell-7),(endCell-14)..(startCell+7)])))
+          )
+        else 
+          (
+            (startCell > endCell) 
+            && (foldr foldfun True (map isEmpty (map (getSquareAt state) [(startCell-9),(startCell-18)..(endCell+9)])))
+          )
+          || 
+          (
+            (startCell < endCell) 
+            && (foldr foldfun True (map isEmpty (map (getSquareAt state) [(endCell-9),(endCell-18)..(startCell+9)])))
+          )
 
-checkDiagonalEmpty :: GameState -> Int -> Int -> Bool
-checkDiagonalEmpty state bCell eCell = do
-    if eCell == bCell
-      then do
-        if getSquareAt state bCell == Empty
-          then True
-        else False
-    else if eCell - bCell > 0
-      then do
-        if getSquareAt state bCell == Empty
-          then checkDiagonalEmpty state (bCell+9) eCell
-        else False
-    else if bCell - eCell > 0
-      then do
-        if getSquareAt state bCell == Empty
-          then checkDiagonalEmpty state (bCell-9) eCell
-        else False
-    else True
+foldfun :: Bool -> Bool -> Bool
+foldfun inti x = (inti && x)
+
+isEmpty :: Square -> Bool
+isEmpty square = (square == Empty)

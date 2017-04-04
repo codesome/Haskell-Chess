@@ -6,6 +6,7 @@ import Types
 
 getSquareColor :: Square -> PColor
 getSquareColor (Piece pc pt) = pc
+getSquareColor (Empty) = NoColor
 
 getSquareType :: Square -> PType
 getSquareType (Piece pc pt) = pt
