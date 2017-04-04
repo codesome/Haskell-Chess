@@ -8,5 +8,8 @@ import qualified VerifyMove.Queen as Queen
 import qualified VerifyMove.Rook as Rook
 import Types
 import BoardUtils
+import DisplayUtils
+import GameUtils
+import MoveUtils
 import Defaults
 import Main
