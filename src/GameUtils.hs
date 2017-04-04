@@ -4,7 +4,6 @@ module GameUtils where
 import Types
 import BoardUtils
 import DisplayUtils
-import GameUtils
 import MoveUtils
 import Defaults
 
@@ -29,7 +28,7 @@ checkLeftColCheck state cell = do
         if (getSquareColor (getSquareAt state cell) /= Black)
           then checkLeftColCheck state (cell-1)
         else do
-           if ((getSquareType cell) == Rook || (getSquareType cell) == Queen)
+           if ((getSquareType (getSquareAt state cell)) == Rook || (getSquareType (getSquareAt state cell)) == Queen)
              then True
            else False
      else if ((cell `mod` 8) == 0)
@@ -37,9 +36,10 @@ checkLeftColCheck state cell = do
          if (getSquareColor (getSquareAt state cell) /= Black)
            then False
           else do
-            if ((getSquareType cell) == Rook || (getSquareType cell) == Queen)
+            if ((getSquareType (getSquareAt state cell)) == Rook || (getSquareType (getSquareAt state cell)) == Queen)
               then True
             else False
+       else False
 
 
 checkRightColCheck :: GameState -> Int -> Bool
@@ -49,7 +49,7 @@ checkRightColCheck state cell = do
         if (getSquareColor (getSquareAt state cell) /= Black)
           then checkRightColCheck state (cell+1)
         else do
-           if ((getSquareType cell) == Rook || (getSquareType cell) == Queen)
+           if ((getSquareType (getSquareAt state cell)) == Rook || (getSquareType (getSquareAt state cell)) == Queen)
              then True
            else False
      else if ((cell `mod` 8) == 7)
@@ -57,9 +57,10 @@ checkRightColCheck state cell = do
          if (getSquareColor (getSquareAt state cell) /= Black)
            then False
           else do
-            if ((getSquareType cell) == Rook || (getSquareType cell) == Queen)
+            if ((getSquareType (getSquareAt state cell)) == Rook || (getSquareType (getSquareAt state cell)) == Queen)
               then True
             else False
+      else False
 
 checkDownRowCheck :: GameState -> Int -> Bool
 checkDownRowCheck state cell = do
@@ -68,7 +69,7 @@ checkDownRowCheck state cell = do
         if (getSquareColor (getSquareAt state cell) /= Black)
           then checkDownRowCheck state (cell+8)
         else do
-           if ((getSquareType cell) == Rook || (getSquareType cell) == Queen)
+           if ((getSquareType (getSquareAt state cell)) == Rook || (getSquareType (getSquareAt state cell)) == Queen)
              then True
            else False
      else if ((cell `div` 8) == 7)
@@ -76,9 +77,10 @@ checkDownRowCheck state cell = do
          if (getSquareColor (getSquareAt state cell) /= Black)
            then False
           else do
-            if ((getSquareType cell) == Rook || (getSquareType cell) == Queen)
+            if ((getSquareType (getSquareAt state cell)) == Rook || (getSquareType (getSquareAt state cell)) == Queen)
               then True
             else False
+       else False
 
 checkUpRowCheck :: GameState -> Int -> Bool
 checkUpRowCheck state cell = do
@@ -87,7 +89,7 @@ checkUpRowCheck state cell = do
         if (getSquareColor (getSquareAt state cell) /= Black)
           then checkUpRowCheck state (cell-8)
         else do
-           if ((getSquareType cell) == Rook || (getSquareType cell) == Queen)
+           if ((getSquareType (getSquareAt state cell)) == Rook || (getSquareType (getSquareAt state cell)) == Queen)
              then True
            else False
      else if ((cell `div` 8) == 0)
@@ -95,9 +97,10 @@ checkUpRowCheck state cell = do
          if (getSquareColor (getSquareAt state cell) /= Black)
            then False
           else do
-            if ((getSquareType cell) == Rook || (getSquareType cell) == Queen)
+            if ((getSquareType (getSquareAt state cell)) == Rook || (getSquareType (getSquareAt state cell)) == Queen)
               then True
             else False
+       else False
 
 checkUpperLeftDiagonal :: GameState -> Int -> Bool
 checkUpperLeftDiagonal state cell = do
@@ -106,7 +109,7 @@ checkUpperLeftDiagonal state cell = do
         if (getSquareColor (getSquareAt state cell) /= Black)
           then checkUpperLeftDiagonal state (cell-9)
         else do
-           if ((getSquareType cell) == Bishop || (getSquareType cell) == Queen || (getSquareType cell) == Pawn)
+           if ((getSquareType (getSquareAt state cell)) == Bishop || (getSquareType (getSquareAt state cell)) == Queen || (getSquareType (getSquareAt state cell)) == Pawn)
              then True
            else False
      else if ((cell `mod` 8) == 0)
@@ -114,9 +117,10 @@ checkUpperLeftDiagonal state cell = do
          if (getSquareColor (getSquareAt state cell) /= Black)
            then False
           else do
-            if ((getSquareType cell) == Rook || (getSquareType cell) == Queen || (getSquareType cell) == Pawn)
+            if ((getSquareType (getSquareAt state cell)) == Rook || (getSquareType (getSquareAt state cell)) == Queen || (getSquareType (getSquareAt state cell)) == Pawn)
               then True
             else False
+       else False
 
 checkLowerLeftDiagonal :: GameState -> Int -> Bool
 checkLowerLeftDiagonal state cell = do
@@ -125,7 +129,7 @@ checkLowerLeftDiagonal state cell = do
         if (getSquareColor (getSquareAt state cell) /= Black)
           then checkLowerLeftDiagonal state (cell+7)
         else do
-           if ((getSquareType cell) == Rook || (getSquareType cell) == Queen)
+           if ((getSquareType (getSquareAt state cell)) == Rook || (getSquareType (getSquareAt state cell)) == Queen)
              then True
            else False
      else if ((cell `div` 8) == 7)
@@ -133,9 +137,10 @@ checkLowerLeftDiagonal state cell = do
          if (getSquareColor (getSquareAt state cell) /= Black)
            then False
           else do
-            if ((getSquareType cell) == Rook || (getSquareType cell) == Queen)
+            if ((getSquareType (getSquareAt state cell)) == Rook || (getSquareType (getSquareAt state cell)) == Queen)
               then True
             else False
+       else False
 
 checkUpperRightDiagonal :: GameState -> Int -> Bool
 checkUpperRightDiagonal state cell = do
@@ -144,7 +149,7 @@ checkUpperRightDiagonal state cell = do
         if (getSquareColor (getSquareAt state cell) /= Black)
           then checkUpperRightDiagonal state (cell-7)
         else do
-           if ((getSquareType cell) == Rook || (getSquareType cell) == Queen || (getSquareType cell) == Pawn)
+           if ((getSquareType (getSquareAt state cell)) == Rook || (getSquareType (getSquareAt state cell)) == Queen || (getSquareType (getSquareAt state cell)) == Pawn)
              then True
            else False
      else if ((cell `mod` 8) == 7)
@@ -152,9 +157,10 @@ checkUpperRightDiagonal state cell = do
          if (getSquareColor (getSquareAt state cell) /= Black)
            then False
           else do
-            if ((getSquareType cell) == Rook || (getSquareType cell) == Queen || (getSquareType cell) == Pawn)
+            if ((getSquareType (getSquareAt state cell)) == Rook || (getSquareType (getSquareAt state cell)) == Queen || (getSquareType (getSquareAt state cell)) == Pawn)
               then True
             else False
+     else False
 
 checkLowerRightDiagonal :: GameState -> Int -> Bool
 checkLowerRightDiagonal state cell = do
@@ -163,7 +169,7 @@ checkLowerRightDiagonal state cell = do
         if (getSquareColor (getSquareAt state cell) /= Black)
           then checkUpperRightDiagonal state (cell+9)
         else do
-           if ((getSquareType cell) == Rook || (getSquareType cell) == Queen)
+           if ((getSquareType (getSquareAt state cell)) == Rook || (getSquareType (getSquareAt state cell)) == Queen)
              then True
            else False
      else if ((cell `div` 8) == 7)
@@ -171,24 +177,25 @@ checkLowerRightDiagonal state cell = do
          if (getSquareColor (getSquareAt state cell) /= Black)
            then False
           else do
-            if ((getSquareType cell) == Rook || (getSquareType cell) == Queen)
+            if ((getSquareType (getSquareAt state cell)) == Rook || (getSquareType (getSquareAt state cell)) == Queen)
               then True
             else False
+       else False
 
 checkUpperLeftHorseCheck :: GameState -> Int ->Bool
 checkUpperLeftHorseCheck state cell = do
-    if ((cell-16) 'div' 8 >=0 && ((cell `mod` 8)-1) >= 0)
+    if (((cell-16) `div` 8)  >=0 && ((cell `mod` 8)-1) >= 0)
       then do
-        if (getSquareColor (getSquareAt state (cell -17)) == Black && (getSquareType (cell -17)) == Knight)
+        if (getSquareColor (getSquareAt state (cell -17)) == Black && (getSquareType (getSquareAt state (cell-17))) == Knight)
           then True
         else False
     else False
 
 checkUMidLeftHorseCheck :: GameState -> Int ->Bool
 checkUMidLeftHorseCheck state cell = do
-    if ((cell-8) 'div' 8 >=0 && ((cell `mod` 8)-2)_ >=0)
+    if ((cell-8) `div` 8 >=0 && ((cell `mod` 8)-2) >=0)
         then do
-          if (getSquareColor (getSquareAt state (cell-10)) == Black && (getSquareType (cell-10)) == Knight)
+          if (getSquareColor (getSquareAt state (cell-10)) == Black && (getSquareType (getSquareAt state (cell-10))) == Knight)
             then True
           else False
      else False
@@ -197,37 +204,34 @@ checkLMidLeftHorseCheck :: GameState -> Int ->Bool
 checkLMidLeftHorseCheck state cell = do
        if (((cell `mod` 8)-2) >=0 && (cell+8) `div` 8 <=7)
            then do
-             if (getSquareColor (getSquareAt state (cell+6)) == Black && (getSquareType (cell+6)) == Knight)
+             if (getSquareColor (getSquareAt state (cell+6)) == Black && (getSquareType (getSquareAt state (cell+6))) == Knight)
                then True
              else False
         else False
 
-checkLowerLeftHorseCheck :: GameState -> Int ->Bool
-checkLMidLeftHorseCheck state cell = do
-    if ((cell+16) 'div' 8 <=7 && ((cell `mod` 8)-1) >=0)
+checkLowerLeftHorseCheck :: GameState -> Int -> Bool
+checkLowerLeftHorseCheck state cell = do
+    if (((cell+16) `div` 8) <=7 && ((cell `mod` 8)-1) >=0)
         then do
-          if (getSquareColor (getSquareAt state (cell+15)) == Black && (getSquareType (cell+15)) == Knight)
+          if (getSquareColor (getSquareAt state (cell+15)) == Black && (getSquareType (getSquareAt state (cell+15))) == Knight)
             then True
           else False
      else False
 
-  startGame :: IO ()
-  startGame = gameLoop initialGameStat
-
 checkUpperRightHorseCheck :: GameState -> Int ->Bool
 checkUpperRightHorseCheck state cell = do
-    if ((cell-16) 'div' 8 >=0 && ((cell `mod` 8)+1)<= 7)
+    if ((cell-16) `div` 8 >=0 && ((cell `mod` 8)+1)<= 7)
       then do
-        if (getSquareColor (getSquareAt state (cell -15)) == Black && (getSquareType (cell -15)) == Knight)
+        if (getSquareColor (getSquareAt state (cell -15)) == Black && (getSquareType (getSquareAt state (cell-15))) == Knight)
           then True
         else False
     else False
 
 checkUMidRightHorseCheck :: GameState -> Int ->Bool
 checkUMidRightHorseCheck state cell = do
-    if ((cell-8) 'div' 8 >=0 && ((cell `mod` 8)+2) <= 7)
+    if ((cell-8) `div` 8 >=0 && ((cell `mod` 8)+2) <= 7)
         then do
-          if (getSquareColor (getSquareAt state (cell-6)) == Black && (getSquareType (cell-6)) == Knight)
+          if (getSquareColor (getSquareAt state (cell-6)) == Black && (getSquareType (getSquareAt state (cell-6))) == Knight)
             then True
           else False
      else False
@@ -236,16 +240,16 @@ checkLMidRightHorseCheck :: GameState -> Int ->Bool
 checkLMidRightHorseCheck state cell = do
        if (((cell `mod` 8)+2) >=0 && (cell+8) `div` 8 <=7)
            then do
-             if (getSquareColor (getSquareAt state (cell+10)) == Black && (getSquareType (cell+10)) == Knight)
+             if (getSquareColor (getSquareAt state (cell+10)) == Black && (getSquareType (getSquareAt state (cell+10))) == Knight)
                then True
              else False
         else False
 
 checkLowerRightHorseCheck :: GameState -> Int ->Bool
 checkLowerRightHorseCheck state cell = do
-    if ((cell+16) 'div' 8 <=7 && ((cell `mod` 8)+1) <=7)
+    if ((cell+16) `div` 8 <=7 && ((cell `mod` 8)+1) <=7)
         then do
-          if (getSquareColor (getSquareAt state (cell+17)) == Black && (getSquareType (cell+17)) == Knight)
+          if (getSquareColor (getSquareAt state (cell+17)) == Black && (getSquareType (getSquareAt state (cell+7))) == Knight)
             then True
           else False
      else False

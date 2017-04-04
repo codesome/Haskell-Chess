@@ -38,4 +38,4 @@ gameLoop state = do
             gameLoop state
 
 startGame :: IO ()
-startGame = gameLoop initialGamStat
+startGame = gameLoop initialGameState
