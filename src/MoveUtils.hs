@@ -31,44 +31,6 @@ sbl = do
     putStrLn "| 56 | 57 | 58 | 59 | 60 | 61 | 62 | 63 |"
     putStrLn "+----+----+----+----+----+----+----+----+"
 
--- To check moves of PlayerW (will be removed later)
-mtsw :: GameState
-mtsw = GameState {
-    board = [
-        [bRook, bKnight, bBishop, bQueen, bKing, bBishop, bKnight, bRook],
-        [Empty, bPawn,   bPawn,   Empty,  bPawn, Empty,   bPawn,   bPawn],
-        [Empty, Empty,   Empty,   Empty,  Empty, Empty,   Empty,   Empty],
-        [Empty, Empty,   Empty,   Empty,  Empty, Empty,   Empty,   Empty],
-        [Empty, Empty,   Empty,   Empty,  Empty, Empty,   Empty,   Empty],
-        [Empty, Empty,   Empty,   Empty,  Empty, Empty,   Empty,   Empty],
-        [Empty, wPawn,   wPawn,   Empty,  wPawn, Empty,   wPawn,   wPawn],
-        [wRook, wKnight, wBishop, wQueen, wKing, wBishop, wKnight, wRook]
-    ],
-    turn = PlayerW,
-    wasCheck = False,
-    whoWasInCheck = Nothing,
-    inProgress = True
-}
-
--- To check moves of PlayerB (will be removed later)
-mtsb :: GameState
-mtsb = GameState {
-    board = [
-        [bRook, bKnight, bBishop, bQueen, bKing, bBishop, bKnight, bRook],
-        [Empty, bPawn,   bPawn,   Empty,  bPawn, Empty,   bPawn,   bPawn],
-        [Empty, Empty,   Empty,   Empty,  Empty, Empty,   Empty,   Empty],
-        [Empty, Empty,   Empty,   Empty,  Empty, Empty,   Empty,   Empty],
-        [Empty, Empty,   Empty,   Empty,  Empty, Empty,   Empty,   Empty],
-        [Empty, Empty,   Empty,   Empty,  Empty, Empty,   Empty,   Empty],
-        [Empty, wPawn,   wPawn,   Empty,  wPawn, Empty,   wPawn,   wPawn],
-        [wRook, wKnight, wBishop, wQueen, wKing, wBishop, wKnight, wRook]
-    ],
-    turn = PlayerB,
-    wasCheck = False,
-    whoWasInCheck = Nothing,
-    inProgress = True
-}
-
 -- Checks if a move is valid
 verifyMove :: GameState -> Int -> Int -> Bool
 verifyMove state start end
@@ -84,7 +46,12 @@ verifyMove state start end
         ptype = getSquareType square
         pcolor = getSquareColor square
         turn = getTurn state
-        validMove =  (start>=0 && start<=63 && end>=0 && end<=63) && (((turn==PlayerW) && (pcolor==White)) || ((turn==PlayerB) && (pcolor==Black)))
+        validMove =  (start>=0 && start<=63 && end>=0 && end<=63)
+            && (
+                ((turn==PlayerW) && (pcolor==White))
+                || ((turn==PlayerB) && (pcolor==Black))
+               )
+            && (pcolor /= (getSquareColor (getSquareAt state end)))
 
 -- to set a square in the board
 setSquareAt :: GameState -> Int -> Square -> GameState
@@ -113,32 +80,33 @@ moveFromTo state from to =
     let
        startSquare = getSquareAt state from
        intermediateState = setSquareAt state from (Empty) -- making from empty
-       newState = setSquareAt intermediateState to startSquare -- making 'to' as that as 'from'
+
+       -- making 'to' as that as 'from' and updating king position
+       newState = if (startSquare==wKing)
+                        then setWhiteKingPos (setSquareAt intermediateState to startSquare) to
+                        else if (startSquare==bKing)
+                            then setBlackKingPos (setSquareAt intermediateState to startSquare) to
+                            else setSquareAt intermediateState to startSquare
+
     in newState
 
 togglePlayer :: GameState -> GameState
 togglePlayer (GameState {
-        board=b,
-        turn=player,
-        wasCheck=wc,
-        whoWasInCheck=wwic,
-        inProgress=ip
+        board=b, turn=player, wasCheck=wc,
+        whoWasInCheck=wwic, inProgress=ip,
+        whiteKing=wk, blackKing=bk
     }) =
         if player == PlayerW
             then (GameState {
-                board=b,
-                turn=PlayerB,
-                wasCheck=wc,
-                whoWasInCheck=wwic,
-                inProgress=ip
+                board=b, turn=PlayerB, wasCheck=wc,
+                whoWasInCheck=wwic, inProgress=ip,
+                whiteKing=wk, blackKing=bk
             })
 
             else (GameState {
-                board=b,
-                turn=PlayerW,
-                wasCheck=wc,
-                whoWasInCheck=wwic,
-                inProgress=ip
+                board=b, turn=PlayerW, wasCheck=wc,
+                whoWasInCheck=wwic, inProgress=ip,
+                whiteKing=wk, blackKing=bk
             })
 
 {-

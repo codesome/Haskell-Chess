@@ -6,6 +6,7 @@ import Types
 
 getSquareColor :: Square -> PColor
 getSquareColor (Piece pc pt) = pc
+getSquareColor (Empty) = NoColor
 
 getSquareType :: Square -> PType
 getSquareType (Piece pc pt) = pt
@@ -40,48 +41,52 @@ describeSquare (Empty) = "Empty Square"
 
 getBoard :: GameState -> Board
 getBoard (GameState {
-    board=b,
-    turn=t,
-    wasCheck=wc,
-    whoWasInCheck=wwic,
-    inProgress=ip
+    board=b, turn=t, wasCheck=wc,
+    whoWasInCheck=wwic, inProgress=ip,
+    whiteKing=wk,  blackKing=bk 
     }) = b
 
 getTurn :: GameState -> Player
 getTurn (GameState {
-    board=b,
-    turn=t,
-    wasCheck=wc,
-    whoWasInCheck=wwic,
-    inProgress=ip
+    board=b, turn=t, wasCheck=wc,
+    whoWasInCheck=wwic, inProgress=ip,
+    whiteKing=wk,  blackKing=bk 
     }) = t
 
 getWasCheck :: GameState -> Bool
 getWasCheck (GameState {
-    board=b,
-    turn=t,
-    wasCheck=wc,
-    whoWasInCheck=wwic,
-    inProgress=ip
+    board=b, turn=t, wasCheck=wc,
+    whoWasInCheck=wwic, inProgress=ip,
+    whiteKing=wk,  blackKing=bk 
     }) = wc
 
 getWhoWasInCheck :: GameState -> Maybe Player
 getWhoWasInCheck (GameState {
-    board=b,
-    turn=t,
-    wasCheck=wc,
-    whoWasInCheck=wwic,
-    inProgress=ip
+    board=b, turn=t, wasCheck=wc,
+    whoWasInCheck=wwic, inProgress=ip,
+    whiteKing=wk,  blackKing=bk 
     }) = wwic
 
 isInProgress :: GameState -> Bool
 isInProgress (GameState {
-    board=b,
-    turn=t,
-    wasCheck=wc,
-    whoWasInCheck=wwic,
-    inProgress=ip
+    board=b, turn=t, wasCheck=wc,
+    whoWasInCheck=wwic, inProgress=ip,
+    whiteKing=wk,  blackKing=bk 
     }) = ip
+
+getWhiteKingPos :: GameState -> Int
+getWhiteKingPos (GameState {
+    board=b, turn=t, wasCheck=wc,
+    whoWasInCheck=wwic, inProgress=ip,
+    whiteKing=wk,  blackKing=bk 
+    }) = wk
+
+getBlackKingPos :: GameState -> Int
+getBlackKingPos (GameState {
+    board=b, turn=t, wasCheck=wc,
+    whoWasInCheck=wwic, inProgress=ip,
+    whiteKing=wk,  blackKing=bk 
+    }) = bk
 
 getSquareAt :: GameState -> Int -> Square
 getSquareAt state index =
@@ -89,3 +94,49 @@ getSquareAt state index =
         row = index `div` 8
         col = index `mod` 8
     in ((board !! row) !! col)
+
+-- to set a square in the board
+setSquareAt :: GameState -> Int -> Square -> GameState
+setSquareAt (GameState { 
+    board=board, turn=t, 
+    wasCheck=wc, whoWasInCheck=wwic, 
+    inProgress=ip, whiteKing=wk, 
+    blackKing=bk }) pos square =
+    let
+
+        row = pos `div` 8
+        col = pos `mod` 8
+
+        (r1,_:r2) = splitAt row board
+        (c1,_:c2) = splitAt col (board!!row)
+
+        newState = GameState { 
+            board= (r1 ++ (c1++(square:c2)):r2) , 
+            turn=t,  wasCheck=wc, 
+            whoWasInCheck=wwic, inProgress=ip,
+            whiteKing=wk, blackKing=bk
+        }
+
+    in newState
+
+setBlackKingPos :: GameState -> Int -> GameState
+setBlackKingPos (GameState {
+    board=b, turn=t, wasCheck=wc,
+    whoWasInCheck=wwic, inProgress=ip,
+    whiteKing=wk,  blackKing=bk 
+    }) newPos = (GameState {
+        board=b, turn=t, wasCheck=wc,
+        whoWasInCheck=wwic, inProgress=ip,
+        whiteKing=wk,  blackKing=newPos 
+    })
+
+setWhiteKingPos :: GameState -> Int -> GameState
+setWhiteKingPos (GameState {
+    board=b, turn=t, wasCheck=wc,
+    whoWasInCheck=wwic, inProgress=ip,
+    whiteKing=wk,  blackKing=bk 
+    }) newPos = (GameState {
+        board=b, turn=t, wasCheck=wc,
+        whoWasInCheck=wwic, inProgress=ip,
+        whiteKing=newPos,  blackKing=bk 
+    })

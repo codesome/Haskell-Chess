@@ -11,7 +11,7 @@ initialGameBoard = [
         [bRook, bKnight, bBishop, bQueen, bKing, bBishop, bKnight, bRook],
         [bPawn, bPawn, bPawn, bPawn, bPawn, bPawn, bPawn, bPawn],
         [Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty],
-        [Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty],
+        [wRook, Empty, Empty, Empty, Empty, Empty, Empty, Empty],
         [Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty],
         [Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty],
         [wPawn, wPawn, wPawn, wPawn, wPawn, wPawn, wPawn, wPawn],
@@ -25,5 +25,7 @@ initialGameState = GameState {
     turn = PlayerW,
     wasCheck = False,
     whoWasInCheck = Nothing,
-    inProgress = True
+    inProgress = True,
+    whiteKing=60, 
+    blackKing=4 
 }
