@@ -19,13 +19,13 @@ initialGameBoard = [
     ]
 
 -- GameState at the start of the game
-initialGameState :: GameState 
+initialGameState :: GameState
 initialGameState = GameState {
     board = initialGameBoard,
     turn = PlayerW,
     wasCheck = False,
     whoWasInCheck = Nothing,
     inProgress = True,
-    whiteKing=60, 
-    blackKing=4 
+    whiteKing=60,
+    blackKing=4
 }
