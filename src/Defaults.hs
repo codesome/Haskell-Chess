@@ -25,5 +25,7 @@ initialGameState = GameState {
     turn = PlayerW,
     wasCheck = False,
     whoWasInCheck = Nothing,
-    inProgress = True
+    inProgress = True,
+    whiteKing=60, 
+    blackKing=4 
 }

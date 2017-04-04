@@ -47,7 +47,9 @@ mtsw = GameState {
     turn = PlayerW,
     wasCheck = False,
     whoWasInCheck = Nothing,
-    inProgress = True
+    inProgress = True,
+    whiteKing=60, 
+    blackKing=4 
 }
 
 -- To check moves of PlayerB (will be removed later)
@@ -66,7 +68,9 @@ mtsb = GameState {
     turn = PlayerB,
     wasCheck = False,
     whoWasInCheck = Nothing,
-    inProgress = True
+    inProgress = True,
+    whiteKing=60, 
+    blackKing=4 
 }
 
 -- Checks if a move is valid
@@ -86,59 +90,39 @@ verifyMove state start end
         turn = getTurn state
         validMove =  (start>=0 && start<=63 && end>=0 && end<=63) && (((turn==PlayerW) && (pcolor==White)) || ((turn==PlayerB) && (pcolor==Black)))
 
--- to set a square in the board
-setSquareAt :: GameState -> Int -> Square -> GameState
-setSquareAt (GameState { board=board, turn=t, wasCheck=wc, whoWasInCheck=wwic, inProgress=ip }) pos square =
-    let
-
-        row = pos `div` 8
-        col = pos `mod` 8
-
-        (r1,_:r2) = splitAt row board
-        (c1,_:c2) = splitAt col (board!!row)
-
-        newState = GameState { 
-            board= (r1 ++ (c1++(square:c2)):r2) , 
-            turn=t, 
-            wasCheck=wc, 
-            whoWasInCheck=wwic, 
-            inProgress=ip 
-        }
-
-    in newState
-
 -- Move a piece from 'from' to 'to' index
 moveFromTo :: GameState -> Int -> Int -> GameState
 moveFromTo state from to = 
     let
        startSquare = getSquareAt state from
        intermediateState = setSquareAt state from (Empty) -- making from empty
-       newState = setSquareAt intermediateState to startSquare -- making 'to' as that as 'from'
+
+       -- making 'to' as that as 'from' and updating king position
+       newState = if (startSquare==wKing)
+                        then setWhiteKingPos (setSquareAt intermediateState to startSquare) to
+                        else if (startSquare==bKing)
+                            then setBlackKingPos (setSquareAt intermediateState to startSquare) to
+                            else setSquareAt intermediateState to startSquare
+
     in newState
 
 togglePlayer :: GameState -> GameState
 togglePlayer (GameState {
-        board=b,
-        turn=player,
-        wasCheck=wc,
-        whoWasInCheck=wwic,
-        inProgress=ip
+        board=b, turn=player, wasCheck=wc,
+        whoWasInCheck=wwic, inProgress=ip,
+        whiteKing=wk, blackKing=bk
     }) = 
         if player == PlayerW
             then (GameState {
-                board=b,
-                turn=PlayerB,
-                wasCheck=wc,
-                whoWasInCheck=wwic,
-                inProgress=ip
+                board=b, turn=PlayerB, wasCheck=wc,
+                whoWasInCheck=wwic, inProgress=ip,
+                whiteKing=wk, blackKing=bk
             })
             
             else (GameState {
-                board=b,
-                turn=PlayerW,
-                wasCheck=wc,
-                whoWasInCheck=wwic,
-                inProgress=ip
+                board=b, turn=PlayerW, wasCheck=wc,
+                whoWasInCheck=wwic, inProgress=ip,
+                whiteKing=wk, blackKing=bk
             })
 
 {-

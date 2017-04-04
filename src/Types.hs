@@ -60,5 +60,7 @@ data GameState = GameState {
     turn :: Player, -- PlayerW/PlayerB depending on whose turn it is next
     wasCheck :: Bool, -- True if it was a check before this move
     whoWasInCheck :: Maybe Player, -- Either PlayerW/PlayerB on check or Nothing
-    inProgress :: Bool -- True if the game is still on
+    inProgress :: Bool, -- True if the game is still on
+    whiteKing :: Int, -- white king position
+    blackKing :: Int -- black king position
 } deriving (Show)
