@@ -116,6 +116,31 @@ moveFromTo state from to =
        newState = setSquareAt intermediateState to startSquare -- making 'to' as that as 'from'
     in newState
 
+togglePlayer :: GameState -> GameState
+togglePlayer (GameState {
+        board=b,
+        turn=player,
+        wasCheck=wc,
+        whoWasInCheck=wwic,
+        inProgress=ip
+    }) = 
+        if player == PlayerW
+            then (GameState {
+                board=b,
+                turn=PlayerB,
+                wasCheck=wc,
+                whoWasInCheck=wwic,
+                inProgress=ip
+            })
+            
+            else (GameState {
+                board=b,
+                turn=PlayerW,
+                wasCheck=wc,
+                whoWasInCheck=wwic,
+                inProgress=ip
+            })
+
 {-
 In game loop:
 - verifyMove
