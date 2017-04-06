@@ -1,6 +1,7 @@
 module Defaults (
     initialGameBoard,
-    initialGameState
+    initialGameState,
+    initialDisplayPoints
 ) where
 
 import Types
