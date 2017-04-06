@@ -16,8 +16,8 @@ verifyMove state start end = do
 
             if (getSquareColor piece)==White
                 then -- White
-                    (colStart==colEnd) -- same column 
-                    && ( 
+                    if (colStart==colEnd) -- same column 
+                    then ( 
                         ((rowStart-rowEnd)==1) -- moved only 1 square
                         || ( 
                             rowStart==6 -- 7th row for white
@@ -25,9 +25,15 @@ verifyMove state start end = do
                             && (getSquareAt state (40+colStart))==Empty -- in between was empty
                            ) -- moved 2 square
                        )
+                    else 
+                        (
+                            (abs (colStart-colEnd))==1
+                            && (rowStart-rowEnd)==1
+                            && (getSquareColor (getSquareAt state end))==Black
+                        )
                 else -- Black
-                    (colStart==colEnd) -- same column
-                    && ( 
+                    if (colStart==colEnd) -- same column
+                    then ( 
                         ((rowEnd-rowStart)==1) -- moved only 1 square
                         || (
                             rowStart==1 -- 2nd row for black
@@ -35,5 +41,11 @@ verifyMove state start end = do
                             && (getSquareAt state (16+colStart))==Empty -- in between was empty
                            ) -- moved 2 square
                        )
+                    else
+                        (
+                            (abs (colStart-colEnd))==1
+                            && (rowEnd-rowStart)==1
+                            && (getSquareColor (getSquareAt state end))==White
+                        )
 
         else False

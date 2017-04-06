@@ -3,6 +3,7 @@ module UI.Display (display,drawSquare) where
 import Graphics.UI.GLUT
 import Control.Monad
 import UI.Square
+-- import qualified UI.ChessPieces as CP
 import Data.IORef
 import Types
 import BoardUtils
@@ -22,5 +23,5 @@ display gameState = do
     gstate <- get gameState
     clear [ColorBuffer]
     forM_ (getBoardPoints gstate) $ drawSquare
+    -- CP.draw (500,500) CP.wBishop
     flush
-
