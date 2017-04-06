@@ -20,16 +20,16 @@ gameUtilsBoard = [
         [wRook, wKnight,  wBishop, wQueen, Empty, wBishop, wKnight, wRook]
     ]
 
-checkGameState :: GameState
-checkGameState = GameState {
-        board = gameUtilsBoard,
-        turn = PlayerW,
-        wasCheck = False,
-        whoWasInCheck = Nothing,
-        inProgress = True,
-        whiteKing=60,
-        blackKing=4
-}
+-- checkGameState :: GameState
+-- checkGameState = GameState {
+--         board = gameUtilsBoard,
+--         turn = PlayerW,
+--         wasCheck = False,
+--         whoWasInCheck = Nothing,
+--         inProgress = True,
+--         whiteKing=60,
+--         blackKing=4
+-- }
 
 colorCompliment :: PColor -> PColor
 colorCompliment color1 = color2 where

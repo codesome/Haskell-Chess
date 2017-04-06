@@ -1,5 +1,8 @@
 module Types where
 
+import Graphics.UI.GLUT (GLfloat)
+
+
 -- Board used in game
 type Board = [[Square]]
 
@@ -16,6 +19,8 @@ data PType = Bishop | King | Knight | Pawn | Queen | Rook deriving (Show,Eq)
 
 -- Players
 data Player = PlayerW | PlayerB deriving (Show,Eq)
+
+type BoardSquare = ((GLfloat,GLfloat,GLfloat),(GLfloat,GLfloat,GLfloat))
 
 -- Short hand notations for convienience
 wBishop :: Square
@@ -62,5 +67,9 @@ data GameState = GameState {
     whoWasInCheck :: Maybe Player, -- Either PlayerW/PlayerB on check or Nothing
     inProgress :: Bool, -- True if the game is still on
     whiteKing :: Int, -- white king position
-    blackKing :: Int -- black king position
+    blackKing :: Int, -- black king position
+    startPointIsSet :: Bool,
+    startPoint :: Int,
+    endPoint :: Int,
+    boardPoints :: [BoardSquare]
 } deriving (Show)
