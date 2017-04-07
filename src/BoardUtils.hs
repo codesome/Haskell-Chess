@@ -11,6 +11,7 @@ getSquareColor (Empty) = NoColor
 
 getSquareType :: Square -> PType
 getSquareType (Piece pc pt) = pt
+getSquareType (Empty) = NoType
 
 {- Getting string utils -}
 

@@ -15,7 +15,7 @@ data Square = Piece PColor PType | Empty deriving (Show,Eq)
 data PColor = White | Black | NoColor deriving (Show,Eq)
 
 -- Type of the piece
-data PType = Bishop | King | Knight | Pawn | Queen | Rook deriving (Show,Eq)
+data PType = Bishop | King | Knight | Pawn | Queen | Rook | NoType deriving (Show,Eq)
 
 -- Players
 data Player = PlayerW | PlayerB deriving (Show,Eq)
