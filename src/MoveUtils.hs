@@ -74,21 +74,21 @@ togglePlayer (GameState {
         board=b, turn=player, wasCheck=wc,
         whoWasInCheck=wwic, inProgress=ip,
         whiteKing=wk, blackKing=bk, startPointIsSet=spis,
-        startPoint=sp, endPoint=ep, boardPoints=bp
+        startPoint=sp, endPoint=ep, boardPoints=bp, moveEnabled=me
     }) =
         if player == PlayerW
             then (GameState {
                 board=b, turn=PlayerB, wasCheck=wc,
                 whoWasInCheck=wwic, inProgress=ip,
                 whiteKing=wk, blackKing=bk,startPointIsSet=spis,
-                startPoint=sp, endPoint=ep, boardPoints=bp
+                startPoint=sp, endPoint=ep, boardPoints=bp, moveEnabled=me
             })
 
             else (GameState {
                 board=b, turn=PlayerW, wasCheck=wc,
                 whoWasInCheck=wwic, inProgress=ip,
                 whiteKing=wk, blackKing=bk,startPointIsSet=spis,
-                startPoint=sp, endPoint=ep, boardPoints=bp
+                startPoint=sp, endPoint=ep, boardPoints=bp, moveEnabled=me
             })
 
 {-

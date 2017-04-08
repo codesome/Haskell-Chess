@@ -5,54 +5,60 @@ import UI.Bindings
 import UI.Display
 import Data.IORef
 
-
 import Types
 import BoardUtils
 import DisplayUtils
 import GameUtils
 import MoveUtils
 import Defaults
+import System.IO
+
+import Network
+import SocketHandlers
+import Control.Concurrent
 
 main :: IO ()
-main = do
-  (_progName, _args) <- getArgsAndInitialize
-  initialWindowSize $= Size 600 600
-  _window <- createWindow "Haskell Chess"
-  gameState <- newIORef initialGameState
-  displayCallback $= display gameState
-  reshapeCallback $= Just reshape
-  keyboardMouseCallback $= Just (keyboardMouse gameState)
-  mainLoop
+main =
+    withSocketsDo $ do
 
-gameLoop :: GameState -> IO ()
-gameLoop state = do
-    print state
-    putStr (getPlayerStr (getTurn state))
-    putStrLn " Move"
-    putStr "From: "
+        (_progName, _args) <- getArgsAndInitialize
 
-    fromStr <- getLine
-    let from = read fromStr :: Int
-
-    putStr "To: "
-    toStr <- getLine
-    let to = read toStr :: Int
-
-    if (verifyMove state from to)
-        then do
-            let newState = togglePlayer (moveFromTo state from to)
-
-            if True -- TODO: Check for check or checkmate
-                then
-                    -- TODO: Take actions for check or checkmate
-                    gameLoop newState
-                else
-                    gameLoop newState
+        if length _args==4 then do
+            
+            let myport = read $ (_args!!0) :: Int 
+            let host = (_args!!1)
+            let port = read $ (_args!!2) :: Int
+            let mycolor = _args!!3
+            
+            sock <- listenOn $ PortNumber (toEnum myport::PortNumber)
+            putStrLn "Starting server ..."
 
 
-        else do
-            putStrLn "Invalid Move!"
-            gameLoop state
+            putStr "Press [Enter] when other player is ready"
+            hFlush stdout
+            _ <- getLine
 
-startGame :: IO ()
-startGame = gameLoop initialGameState
+            initialWindowSize $= Size 600 600
+            _window <- createWindow "Haskell Chess"
+
+            let initGameState = if mycolor=="white"
+                                    then (enableMove initialGameState)
+                                    else (disableMove initialGameState)
+
+            gameState <- newIORef initGameState
+
+            if not (mycolor=="white")
+                then do
+                    forkIO $ opponentMoveHandler gameState sock
+                    putStr ""
+                else putStr ""
+
+            -- sender
+            sender <- newIORef (sendMessageUtil host (PortNumber (toEnum port::PortNumber)))
+            
+            displayCallback $= display gameState
+            reshapeCallback $= Just reshape
+            keyboardMouseCallback $= Just (keyboardMouse gameState sock sender)
+            mainLoop
+        else
+            putStrLn "$ haskell-chess host port"

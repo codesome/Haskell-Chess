@@ -68,8 +68,9 @@ data GameState = GameState {
     inProgress :: Bool, -- True if the game is still on
     whiteKing :: Int, -- white king position
     blackKing :: Int, -- black king position
-    startPointIsSet :: Bool,
-    startPoint :: Int,
-    endPoint :: Int,
-    boardPoints :: [BoardSquare]
+    startPointIsSet :: Bool, -- True if left click is registered
+    startPoint :: Int, -- index of start square selected
+    endPoint :: Int, -- index of end square selected
+    boardPoints :: [BoardSquare], -- display points
+    moveEnabled :: Bool -- True if the user can move
 } deriving (Show)

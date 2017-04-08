@@ -46,7 +46,7 @@ getBoard (GameState {
     board=b, turn=_, wasCheck=_,
     whoWasInCheck=_, inProgress=_,
     whiteKing=_,  blackKing=_ , startPointIsSet=_,
-    startPoint=_, endPoint=_, boardPoints=_
+    startPoint=_, endPoint=_, boardPoints=_, moveEnabled=_
     }) = b
 
 getTurn :: GameState -> Player
@@ -54,7 +54,7 @@ getTurn (GameState {
     board=_, turn=t, wasCheck=_,
     whoWasInCheck=_, inProgress=_,
     whiteKing=_,  blackKing=_ , startPointIsSet=_,
-    startPoint=_, endPoint=_, boardPoints=_
+    startPoint=_, endPoint=_, boardPoints=_, moveEnabled=_
     }) = t
 
 getWasCheck :: GameState -> Bool
@@ -62,7 +62,7 @@ getWasCheck (GameState {
     board=_, turn=_, wasCheck=wc,
     whoWasInCheck=_, inProgress=_,
     whiteKing=_,  blackKing=_ , startPointIsSet=_,
-    startPoint=_, endPoint=_, boardPoints=_
+    startPoint=_, endPoint=_, boardPoints=_, moveEnabled=_
     }) = wc
 
 getWhoWasInCheck :: GameState -> Maybe Player
@@ -70,7 +70,7 @@ getWhoWasInCheck (GameState {
     board=_, turn=_, wasCheck=_,
     whoWasInCheck=wwic, inProgress=_,
     whiteKing=_,  blackKing=_ , startPointIsSet=_,
-    startPoint=_, endPoint=_, boardPoints=_
+    startPoint=_, endPoint=_, boardPoints=_, moveEnabled=_
     }) = wwic
 
 isInProgress :: GameState -> Bool
@@ -78,7 +78,7 @@ isInProgress (GameState {
     board=_, turn=_, wasCheck=_,
     whoWasInCheck=_, inProgress=ip,
     whiteKing=_,  blackKing=_ , startPointIsSet=_,
-    startPoint=_, endPoint=_, boardPoints=_
+    startPoint=_, endPoint=_, boardPoints=_, moveEnabled=_
     }) = ip
 
 getWhiteKingPos :: GameState -> Int
@@ -86,7 +86,7 @@ getWhiteKingPos (GameState {
     board=_, turn=_, wasCheck=_,
     whoWasInCheck=_, inProgress=_,
     whiteKing=wk,  blackKing=_ , startPointIsSet=_,
-    startPoint=_, endPoint=_, boardPoints=_
+    startPoint=_, endPoint=_, boardPoints=_, moveEnabled=_
     }) = wk
 
 getBlackKingPos :: GameState -> Int
@@ -94,7 +94,7 @@ getBlackKingPos (GameState {
     board=_, turn=_, wasCheck=_,
     whoWasInCheck=_, inProgress=_,
     whiteKing=_,  blackKing=bk , startPointIsSet=_,
-    startPoint=_, endPoint=_, boardPoints=_
+    startPoint=_, endPoint=_, boardPoints=_, moveEnabled=_
     }) = bk
 
 getStartPoint :: GameState -> Int
@@ -102,7 +102,7 @@ getStartPoint (GameState {
     board=_, turn=_, wasCheck=_,
     whoWasInCheck=_, inProgress=_,
     whiteKing=_,  blackKing=_ , startPointIsSet=_,
-    startPoint=sp, endPoint=_, boardPoints=_
+    startPoint=sp, endPoint=_, boardPoints=_, moveEnabled=_
     }) = sp
 
 getEndPoint :: GameState -> Int
@@ -110,7 +110,7 @@ getEndPoint (GameState {
     board=_, turn=_, wasCheck=_,
     whoWasInCheck=_, inProgress=_,
     whiteKing=_,  blackKing=_ , startPointIsSet=_,
-    startPoint=_, endPoint=ep, boardPoints=_
+    startPoint=_, endPoint=ep, boardPoints=_, moveEnabled=_
     }) = ep
 
 getBoardPoints :: GameState -> [BoardSquare]
@@ -118,15 +118,23 @@ getBoardPoints (GameState {
     board=_, turn=_, wasCheck=_,
     whoWasInCheck=_, inProgress=_,
     whiteKing=_,  blackKing=_ , startPointIsSet=_,
-    startPoint=_, endPoint=_, boardPoints=bp
+    startPoint=_, endPoint=_, boardPoints=bp, moveEnabled=_
     }) = bp
+
+getMoveEnabled :: GameState -> Bool
+getMoveEnabled (GameState {
+    board=_, turn=_, wasCheck=_,
+    whoWasInCheck=_, inProgress=_,
+    whiteKing=_,  blackKing=_ , startPointIsSet=_,
+    startPoint=_, endPoint=_, boardPoints=_, moveEnabled=me
+    }) = me
 
 isStartPointSet :: GameState -> Bool
 isStartPointSet (GameState {
     board=_, turn=_, wasCheck=_,
     whoWasInCheck=_, inProgress=_,
     whiteKing=_,  blackKing=_ , startPointIsSet=spis,
-    startPoint=_, endPoint=_, boardPoints=_
+    startPoint=_, endPoint=_, boardPoints=_, moveEnabled=_
     }) = spis
 
 getSquareAt :: GameState -> Int -> Square
@@ -142,7 +150,7 @@ setSquareAt (GameState {
     board=board, turn=t, 
     wasCheck=wc, whoWasInCheck=wwic, 
     inProgress=ip, whiteKing=wk, 
-    blackKing=bk , startPointIsSet=spis,
+    blackKing=bk , startPointIsSet=spis, moveEnabled=me,
     startPoint=sp, endPoint=ep, boardPoints=bp }) pos square =
     let
 
@@ -155,7 +163,7 @@ setSquareAt (GameState {
         newState = GameState { 
             board= (r1 ++ (c1++(square:c2)):r2) , 
             turn=t,  wasCheck=wc, 
-            whoWasInCheck=wwic, inProgress=ip,
+            whoWasInCheck=wwic, inProgress=ip, moveEnabled=me,
             whiteKing=wk, blackKing=bk , startPointIsSet=spis,
             startPoint=sp, endPoint=ep, boardPoints=bp
         }
@@ -165,12 +173,12 @@ setSquareAt (GameState {
 setBlackKingPos :: GameState -> Int -> GameState
 setBlackKingPos (GameState {
     board=b, turn=t, wasCheck=wc,
-    whoWasInCheck=wwic, inProgress=ip,
+    whoWasInCheck=wwic, inProgress=ip, moveEnabled=me,
     whiteKing=wk,  blackKing=bk , startPointIsSet=spis,
     startPoint=sp, endPoint=ep , boardPoints=bp
     }) newPos = (GameState {
         board=b, turn=t, wasCheck=wc,
-        whoWasInCheck=wwic, inProgress=ip,
+        whoWasInCheck=wwic, inProgress=ip, moveEnabled=me,
         whiteKing=wk,  blackKing=newPos , startPointIsSet=spis,
         startPoint=sp, endPoint=ep , boardPoints=bp
     })
@@ -178,12 +186,12 @@ setBlackKingPos (GameState {
 setWhiteKingPos :: GameState -> Int -> GameState
 setWhiteKingPos (GameState {
     board=b, turn=t, wasCheck=wc,
-    whoWasInCheck=wwic, inProgress=ip,
+    whoWasInCheck=wwic, inProgress=ip, moveEnabled=me,
     whiteKing=wk,  blackKing=bk , startPointIsSet=spis,
     startPoint=sp, endPoint=ep, boardPoints=bp
     }) newPos = (GameState {
         board=b, turn=t, wasCheck=wc,
-        whoWasInCheck=wwic, inProgress=ip,
+        whoWasInCheck=wwic, inProgress=ip, moveEnabled=me,
         whiteKing=newPos,  blackKing=bk , startPointIsSet=spis,
         startPoint=sp, endPoint=ep , boardPoints=bp
     })
@@ -191,12 +199,12 @@ setWhiteKingPos (GameState {
 setStartPointIsSet :: GameState -> Bool -> GameState
 setStartPointIsSet (GameState {
     board=b, turn=t, wasCheck=wc,
-    whoWasInCheck=wwic, inProgress=ip,
+    whoWasInCheck=wwic, inProgress=ip, moveEnabled=me,
     whiteKing=wk,  blackKing=bk , startPointIsSet=spis,
     startPoint=sp, endPoint=ep, boardPoints=bp
     }) setIt = (GameState {
         board=b, turn=t, wasCheck=wc,
-        whoWasInCheck=wwic, inProgress=ip,
+        whoWasInCheck=wwic, inProgress=ip, moveEnabled=me,
         whiteKing=wk,  blackKing=bk , startPointIsSet=setIt,
         startPoint=sp, endPoint=ep , boardPoints=bp
     })
@@ -204,12 +212,12 @@ setStartPointIsSet (GameState {
 setStartPoint :: GameState -> Int -> GameState
 setStartPoint (GameState {
     board=b, turn=t, wasCheck=wc,
-    whoWasInCheck=wwic, inProgress=ip,
+    whoWasInCheck=wwic, inProgress=ip, moveEnabled=me,
     whiteKing=wk,  blackKing=bk , startPointIsSet=spis,
     startPoint=sp, endPoint=ep, boardPoints=bp
     }) newSP = (GameState {
         board=b, turn=t, wasCheck=wc,
-        whoWasInCheck=wwic, inProgress=ip,
+        whoWasInCheck=wwic, inProgress=ip, moveEnabled=me,
         whiteKing=wk,  blackKing=bk , startPointIsSet=spis,
         startPoint=newSP, endPoint=ep , boardPoints=bp
     })
@@ -217,12 +225,12 @@ setStartPoint (GameState {
 setEndPoint :: GameState -> Int -> GameState
 setEndPoint (GameState {
     board=b, turn=t, wasCheck=wc,
-    whoWasInCheck=wwic, inProgress=ip,
+    whoWasInCheck=wwic, inProgress=ip, moveEnabled=me,
     whiteKing=wk,  blackKing=bk , startPointIsSet=spis,
     startPoint=sp, endPoint=ep, boardPoints=bp
     }) newEP = (GameState {
         board=b, turn=t, wasCheck=wc,
-        whoWasInCheck=wwic, inProgress=ip,
+        whoWasInCheck=wwic, inProgress=ip, moveEnabled=me,
         whiteKing=wk,  blackKing=bk , startPointIsSet=spis,
         startPoint=sp, endPoint=newEP , boardPoints=bp
     })
@@ -230,12 +238,12 @@ setEndPoint (GameState {
 setBoardPoints :: GameState -> [BoardSquare] -> GameState
 setBoardPoints (GameState {
     board=b, turn=t, wasCheck=wc,
-    whoWasInCheck=wwic, inProgress=ip,
+    whoWasInCheck=wwic, inProgress=ip, moveEnabled=me,
     whiteKing=wk,  blackKing=bk , startPointIsSet=spis,
     startPoint=sp, endPoint=ep, boardPoints=bp
     }) newBP = (GameState {
         board=b, turn=t, wasCheck=wc,
-        whoWasInCheck=wwic, inProgress=ip,
+        whoWasInCheck=wwic, inProgress=ip, moveEnabled=me,
         whiteKing=wk,  blackKing=bk , startPointIsSet=spis,
         startPoint=sp, endPoint=ep , boardPoints=newBP
     })
@@ -244,7 +252,7 @@ setBoardPointColorAt :: GameState -> Int -> (GLfloat,GLfloat,GLfloat) -> GameSta
 setBoardPointColorAt (GameState { 
     board=board, turn=t, 
     wasCheck=wc, whoWasInCheck=wwic, 
-    inProgress=ip, whiteKing=wk, 
+    inProgress=ip, whiteKing=wk,  moveEnabled=me,
     blackKing=bk , startPointIsSet=spis,
     startPoint=sp, endPoint=ep, boardPoints=bp }) index newColor =
     let
@@ -253,10 +261,41 @@ setBoardPointColorAt (GameState {
 
         newState = GameState { 
             board=board , 
-            turn=t,  wasCheck=wc, 
+            turn=t,  wasCheck=wc,  moveEnabled=me,
             whoWasInCheck=wwic, inProgress=ip,
             whiteKing=wk, blackKing=bk , startPointIsSet=spis,
             startPoint=sp, endPoint=ep, boardPoints=(l1 ++ [(coords,newColor)] ++ l2)
         }
 
     in newState
+
+
+enableMove :: GameState -> GameState
+enableMove (GameState { 
+    board=board, turn=t, 
+    wasCheck=wc, whoWasInCheck=wwic, 
+    inProgress=ip, whiteKing=wk,  moveEnabled=_,
+    blackKing=bk , startPointIsSet=spis,
+    startPoint=sp, endPoint=ep, boardPoints=bp }) 
+    = (GameState { 
+        board=board , 
+        turn=t,  wasCheck=wc,  moveEnabled=True,
+        whoWasInCheck=wwic, inProgress=ip,
+        whiteKing=wk, blackKing=bk , startPointIsSet=spis,
+        startPoint=sp, endPoint=ep, boardPoints=bp
+    })
+
+disableMove :: GameState -> GameState
+disableMove (GameState { 
+    board=board, turn=t, 
+    wasCheck=wc, whoWasInCheck=wwic, 
+    inProgress=ip, whiteKing=wk,  moveEnabled=_,
+    blackKing=bk , startPointIsSet=spis,
+    startPoint=sp, endPoint=ep, boardPoints=bp })
+    = (GameState {
+        board=board , 
+        turn=t,  wasCheck=wc,  moveEnabled=False,
+        whoWasInCheck=wwic, inProgress=ip,
+        whiteKing=wk, blackKing=bk , startPointIsSet=spis,
+        startPoint=sp, endPoint=ep, boardPoints=bp
+    })

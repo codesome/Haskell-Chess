@@ -6,6 +6,7 @@ import qualified VerifyMove.Knight as Knight
 import qualified VerifyMove.Pawn as Pawn
 import qualified VerifyMove.Queen as Queen
 import qualified VerifyMove.Rook as Rook
+import SocketHandlers
 import Types
 import BoardUtils
 import DisplayUtils

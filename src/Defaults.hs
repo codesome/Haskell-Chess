@@ -52,5 +52,6 @@ initialGameState = GameState {
     startPointIsSet=False,
     startPoint=0, 
     endPoint=0,
-    boardPoints=initialDisplayPoints
+    boardPoints=initialDisplayPoints, 
+    moveEnabled=True
 }

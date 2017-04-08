@@ -1,4 +1,4 @@
-module UI.Bindings (display, reshape, keyboardMouse) where
+module UI.Bindings (display, reshape, keyboardMouse, opponentMoveHandler) where
  
 import Graphics.UI.GLUT
 import Control.Monad
@@ -8,6 +8,10 @@ import Data.IORef
 import Types
 import BoardUtils
 import MoveUtils
+import Network
+import Control.Concurrent
+import SocketHandlers
+import Data.List.Split
 
 reshape :: ReshapeCallback
 reshape size = do 
@@ -68,27 +72,63 @@ leftButtonHandler x y gameState = do
             let intermediate = (colorThisAsFirst gameState index)
             (setStartPointIsSet (setStartPoint intermediate index) True)
 
-rightButtonHandler :: GLint -> GLint -> GameState -> GameState
-rightButtonHandler x y gameState = do
+rightButtonHandlerUtil :: GLint -> GLint -> GameState -> GameState
+rightButtonHandlerUtil x y gameState = do
     let index = getIndex x y
     if (isStartPointSet gameState)
         then do
             let startPoint = getStartPoint gameState
             if (verifyMove gameState startPoint index)
                 then do
-                    let intermediate = togglePlayer (moveFromTo gameState startPoint index)
-                    let intermediate1 = (resetColor intermediate startPoint)
-                    (setStartPointIsSet (resetColor intermediate1 index) False)
+                    let intermediate = (disableMove gameState)
+                    let intermediate1 = togglePlayer $ moveFromTo intermediate startPoint index
+                    let intermediate2 = (resetColor intermediate1 startPoint)
+                    (setStartPointIsSet (resetColor intermediate2 index) False)
                 else 
                     gameState
 
-        else
+        else do
             gameState
 
-keyboardMouse :: IORef GameState -> KeyboardMouseCallback
-keyboardMouse gameState _key Down _ (Position x y) = case _key of
+rightButtonHandler :: GLint -> GLint -> IORef GameState -> Socket -> IORef (String -> IO ()) -> IO ()
+rightButtonHandler x y gameState sock s = do
+    gstate <- get gameState
+    if (getMoveEnabled gstate) 
+        then do
+            let startPoint = getStartPoint gstate
+            gameState $~! (rightButtonHandlerUtil x y)
+
+            gstate2 <- get gameState
+            if not (getMoveEnabled gstate2)
+                then do
+                    sender <- get s
+                    sender ((show startPoint)++":"++(show $ getIndex x y))
+                    forkIO $ opponentMoveHandler gameState sock
+                    putStr ""
+                else 
+                    putStr ""
+
+        else 
+            putStr ""
+
+opponentMove :: Int -> Int -> GameState -> GameState
+opponentMove from to gameState =  enableMove $ togglePlayer $ moveFromTo gameState from to
+
+opponentMoveHandlerUtil :: IORef GameState -> String -> IO ()
+opponentMoveHandlerUtil gameState move = do
+    putStrLn move
+    let l = splitOn ":" move
+    let from = read (l!!0) :: Int
+    let to = read (l!!1) :: Int
+    gameState $~! (opponentMove from to)
+
+opponentMoveHandler :: IORef GameState -> Socket -> IO ()
+opponentMoveHandler gameState sock = handleMessage sock $ opponentMoveHandlerUtil gameState
+
+keyboardMouse :: IORef GameState -> Socket -> IORef (String -> IO ()) -> KeyboardMouseCallback
+keyboardMouse gameState sock sender _key Down _ (Position x y) = case _key of
     (MouseButton LeftButton) -> gameState $~! (leftButtonHandler x y)
-    (MouseButton RightButton) -> gameState $~! (rightButtonHandler x y)
+    (MouseButton RightButton) -> (rightButtonHandler x y gameState sock sender)
     (Char 'q') -> exitWith ExitSuccess
     _ -> return ()
-keyboardMouse _ _ _ _ _ = return ()
+keyboardMouse _ _ _ _ _ _ _ = return ()
