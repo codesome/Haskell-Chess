@@ -46,7 +46,7 @@ colorThisAsFirst gameState index = setBoardPointColorAt gameState index firstMov
 
 resetColor :: GameState -> Int -> GameState
 resetColor gameState index
-    | (oddRow && oddCol) || ((not oddRow) && (not oddCol))  = setBoardPointColorAt gameState index blackColor
+    | (oddRow && (not oddCol)) || ((not oddRow) && oddCol)  = setBoardPointColorAt gameState index blackColor
     | otherwise = setBoardPointColorAt gameState index whiteColor
     where 
         row = index `div` 8

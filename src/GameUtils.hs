@@ -13,7 +13,7 @@ gameUtilsBoard = [
         [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
         [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
         [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
-        [Epmty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
+        [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
         [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
         [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
         [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty]

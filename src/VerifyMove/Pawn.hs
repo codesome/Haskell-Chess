@@ -3,12 +3,13 @@ module VerifyMove.Pawn where
 import Types
 import BoardUtils
 
-verifyMove :: GameState -> Int -> Int -> Bool
-verifyMove state start end = do
+verifyMove :: GameState -> Int -> Int -> PColor -> Bool
+verifyMove state start end col = do
     let rowStart = start `div` 8
     let colStart = start `mod` 8
     let rowEnd = end `div` 8
     let colEnd = end `mod` 8
+    let oppcolor = if col==White then Black else White
 
     let piece = getSquareAt state start
     if (piece /= Empty) && (rowStart/=rowEnd)
@@ -26,7 +27,7 @@ verifyMove state start end = do
                 (
                     (abs (colStart-colEnd))==1
                     && (rowStart-rowEnd)==1
-                    && (getSquareColor (getSquareAt state end))==Black
+                    && (getSquareColor (getSquareAt state end))==oppcolor
                 )
 
         else False

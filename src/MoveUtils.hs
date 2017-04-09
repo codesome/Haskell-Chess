@@ -37,7 +37,7 @@ verifyMove state start end
     | validMove && (ptype==Bishop) = (Bishop.verifyMove state start end)
     | validMove && (ptype==King) = (King.verifyMove state start end)
     | validMove && (ptype==Knight) = (Knight.verifyMove state start end)
-    | validMove && (ptype==Pawn) = (Pawn.verifyMove state start end)
+    | validMove && (ptype==Pawn) = (Pawn.verifyMove state start end pcolor)
     | validMove && (ptype==Queen) = (Queen.verifyMove state start end)
     | validMove && (ptype==Rook) = (Rook.verifyMove state start end)
     | otherwise = False

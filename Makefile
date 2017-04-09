@@ -1,3 +1,9 @@
+test: install
+	haskell-chess 3000 127.0.0.1 8000 white
+
+t2:
+	haskell-chess 3000 127.0.0.1 8000 white
+
 build:
 	cabal install
 
