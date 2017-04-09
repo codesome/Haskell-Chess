@@ -3,7 +3,6 @@ module GameUtils where
 
 import Types
 import BoardUtils
-import DisplayUtils
 import MoveUtils
 import Defaults
 
@@ -32,7 +31,7 @@ checkGameState = GameState {
         startPointIsSet=False,
         startPoint=0, 
         endPoint=0,
-        boardPoints=initialDisplayPoints, moveEnabled=True
+        boardPoints=initialDisplayPointsW, moveEnabled=True
 }
 
 colorCompliment :: PColor -> PColor

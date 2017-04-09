@@ -81,7 +81,7 @@ rightButtonHandlerUtil x y gameState = do
             if (verifyMove gameState startPoint index)
                 then do
                     let intermediate = (disableMove gameState)
-                    let intermediate1 = togglePlayer $ moveFromTo intermediate startPoint index
+                    let intermediate1 = (moveFromTo intermediate startPoint index)
                     let intermediate2 = (resetColor intermediate1 startPoint)
                     (setStartPointIsSet (resetColor intermediate2 index) False)
                 else 
@@ -102,7 +102,7 @@ rightButtonHandler x y gameState sock s = do
             if not (getMoveEnabled gstate2)
                 then do
                     sender <- get s
-                    sender ((show startPoint)++":"++(show $ getIndex x y))
+                    sender ((show (63-startPoint))++":"++(show $ (63-(getIndex x y))))
                     forkIO $ opponentMoveHandler gameState sock
                     putStr ""
                 else 
@@ -112,7 +112,7 @@ rightButtonHandler x y gameState sock s = do
             putStr ""
 
 opponentMove :: Int -> Int -> GameState -> GameState
-opponentMove from to gameState =  enableMove $ togglePlayer $ moveFromTo gameState from to
+opponentMove from to gameState =  enableMove $ moveFromTo gameState from to
 
 opponentMoveHandlerUtil :: IORef GameState -> String -> IO ()
 opponentMoveHandlerUtil gameState move = do

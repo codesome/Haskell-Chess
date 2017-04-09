@@ -20,7 +20,10 @@ data PType = Bishop | King | Knight | Pawn | Queen | Rook | NoType deriving (Sho
 -- Players
 data Player = PlayerW | PlayerB deriving (Show,Eq)
 
-type BoardSquare = ((GLfloat,GLfloat,GLfloat),(GLfloat,GLfloat,GLfloat))
+type BoardSquare = ((GLfloat,GLfloat,GLfloat),(GLfloat,GLfloat,GLfloat),(Int,GLfloat))
+
+emptyBoardPiece :: (Int,GLfloat)
+emptyBoardPiece = (0,0)
 
 -- Short hand notations for convienience
 wBishop :: Square

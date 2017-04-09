@@ -144,6 +144,11 @@ getSquareAt state index =
         col = index `mod` 8
     in ((board !! row) !! col)
 
+getBoardPieceAt :: GameState -> Int -> (Int,GLfloat)
+getBoardPieceAt state index =
+    let (_,_,p) = ((getBoardPoints state) !! index)
+    in p
+
 -- to set a square in the board
 setSquareAt :: GameState -> Int -> Square -> GameState
 setSquareAt (GameState { 
@@ -257,14 +262,35 @@ setBoardPointColorAt (GameState {
     startPoint=sp, endPoint=ep, boardPoints=bp }) index newColor =
     let
 
-        (l1, (coords,_):l2) = splitAt index bp
+        (l1, (coords,_,p):l2) = splitAt index bp
 
         newState = GameState { 
             board=board , 
             turn=t,  wasCheck=wc,  moveEnabled=me,
             whoWasInCheck=wwic, inProgress=ip,
             whiteKing=wk, blackKing=bk , startPointIsSet=spis,
-            startPoint=sp, endPoint=ep, boardPoints=(l1 ++ [(coords,newColor)] ++ l2)
+            startPoint=sp, endPoint=ep, boardPoints=(l1 ++ [(coords,newColor,p)] ++ l2)
+        }
+
+    in newState
+
+setBoardPieceAt :: GameState -> Int -> (Int,GLfloat) -> GameState
+setBoardPieceAt (GameState { 
+    board=board, turn=t, 
+    wasCheck=wc, whoWasInCheck=wwic, 
+    inProgress=ip, whiteKing=wk,  moveEnabled=me,
+    blackKing=bk , startPointIsSet=spis,
+    startPoint=sp, endPoint=ep, boardPoints=bp }) index newPiece =
+    let
+
+        (l1, (coords,col,_):l2) = splitAt index bp
+
+        newState = GameState { 
+            board=board , 
+            turn=t,  wasCheck=wc,  moveEnabled=me,
+            whoWasInCheck=wwic, inProgress=ip,
+            whiteKing=wk, blackKing=bk , startPointIsSet=spis,
+            startPoint=sp, endPoint=ep, boardPoints=(l1 ++ [(coords,col,newPiece)] ++ l2)
         }
 
     in newState

@@ -53,12 +53,19 @@ verifyMove state start end
                )
             && (pcolor /= (getSquareColor (getSquareAt state end)))
 
+changePieceFromTo :: GameState -> Int -> Int -> GameState
+changePieceFromTo state from to =
+    let
+        p = getBoardPieceAt state from
+        newState = setBoardPieceAt (setBoardPieceAt state from emptyBoardPiece) to p
+    in newState
+
 -- Move a piece from 'from' to 'to' index
 moveFromTo :: GameState -> Int -> Int -> GameState
 moveFromTo state from to =
     let
        startSquare = getSquareAt state from
-       intermediateState = setSquareAt state from (Empty) -- making from empty
+       intermediateState = setSquareAt state from (Empty)
 
        -- making 'to' as that as 'from' and updating king position
        newState = if (startSquare==wKing)
@@ -67,7 +74,7 @@ moveFromTo state from to =
                             then setBlackKingPos (setSquareAt intermediateState to startSquare) to
                             else setSquareAt intermediateState to startSquare
 
-    in newState
+    in (changePieceFromTo newState from to)
 
 togglePlayer :: GameState -> GameState
 togglePlayer (GameState {
@@ -90,10 +97,3 @@ togglePlayer (GameState {
                 whiteKing=wk, blackKing=bk,startPointIsSet=spis,
                 startPoint=sp, endPoint=ep, boardPoints=bp, moveEnabled=me
             })
-
-{-
-In game loop:
-- verifyMove
-- moveFromTo
-- check for check
--}

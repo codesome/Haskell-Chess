@@ -7,7 +7,6 @@ import Data.IORef
 
 import Types
 import BoardUtils
-import DisplayUtils
 import GameUtils
 import MoveUtils
 import Defaults
@@ -42,8 +41,8 @@ main =
             _window <- createWindow "Haskell Chess"
 
             let initGameState = if mycolor=="white"
-                                    then (enableMove initialGameState)
-                                    else (disableMove initialGameState)
+                                    then (enableMove initialGameStateW)
+                                    else (disableMove initialGameStateB)
 
             gameState <- newIORef initGameState
 
