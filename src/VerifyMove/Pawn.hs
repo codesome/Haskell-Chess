@@ -4,18 +4,10 @@ import Types
 import BoardUtils
 
 verifyMove :: GameState -> Int -> Int -> PColor -> Bool
-verifyMove state start end col = do
-    let rowStart = start `div` 8
-    let colStart = start `mod` 8
-    let rowEnd = end `div` 8
-    let colEnd = end `mod` 8
-    let oppcolor = if col==White then Black else White
-
-    let piece = getSquareAt state start
-    if (piece /= Empty) && (rowStart/=rowEnd)
-        then 
-            if (colStart==colEnd) -- same column 
-            then (getSquareColor (getSquareAt state end))/=oppcolor && ( 
+verifyMove state start end col
+    | (piece == Empty) || (rowStart == rowEnd) = False
+    -- same column
+    | (colStart==colEnd) = (getSquareAt state end)==Empty && ( 
                  ((rowStart-rowEnd)==1) -- moved only 1 square
                  || ( 
                      rowStart==6
@@ -23,11 +15,16 @@ verifyMove state start end col = do
                      && (getSquareAt state (40+colStart))==Empty -- in between was empty
                     ) -- moved 2 square
                 )
-            else 
-                (
+    -- diagonal move
+    | otherwise =  (
                     (abs (colStart-colEnd))==1
                     && (rowStart-rowEnd)==1
                     && (getSquareColor (getSquareAt state end))==oppcolor
                 )
-
-        else False
+    where
+        rowStart = start `div` 8
+        colStart = start `mod` 8
+        rowEnd = end `div` 8
+        colEnd = end `mod` 8
+        oppcolor = if col==White then Black else White
+        piece = getSquareAt state start

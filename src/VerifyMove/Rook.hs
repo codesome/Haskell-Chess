@@ -4,27 +4,25 @@ import Types
 import BoardUtils
 
 verifyMove :: GameState -> Int -> Int -> Bool
-verifyMove state startCell endCell = do
-  let   rowStart = startCell `div` 8
-  let   colStart = startCell `mod` 8
-  let   rowEnd   = endCell   `div` 8
-  let   colEnd   = endCell   `mod` 8
-  if (startCell == endCell)
-    then False
-  else if colStart == colEnd
-    then
-      if startCell > endCell
-        then (foldr foldfun True  (map isEmpty (map (getSquareAt state) [(startCell-8),(startCell-16)..(endCell+8)])))
-      else (foldr foldfun True  (map isEmpty (map (getSquareAt state) [(startCell+8),(startCell+16)..(endCell-8)])))
-  else if rowStart == rowEnd
-    then
-      if startCell > endCell
-        then (foldr foldfun True  (map isEmpty (map (getSquareAt state) [(startCell-1),(startCell-2)..(endCell+1)])))
-      else (foldr foldfun True  (map isEmpty (map (getSquareAt state) [(startCell+1),(startCell+2)..(endCell-1)])))
-  else False
+verifyMove state startCell endCell
+    | (startCell == endCell) = False
+    | (colStart == colEnd) = ((startCell > endCell) 
+                                && ((foldr andAll True  (map (isEmpty state) [(startCell-8),(startCell-16)..(endCell+8)]))))
+                             || ((not (startCell > endCell)) 
+                                && (foldr andAll True  (map (isEmpty state) [(startCell+8),(startCell+16)..(endCell-8)])))
+    | (rowStart == rowEnd) = ((startCell > endCell)
+                    && (foldr andAll True  (map (isEmpty state) [(startCell-1),(startCell-2)..(endCell+1)])))
+                  || ((not (startCell > endCell))
+                    && (foldr andAll True  (map (isEmpty state) [(startCell+1),(startCell+2)..(endCell-1)])))
+    | otherwise = False
+    where
+        rowStart = startCell `div` 8
+        colStart = startCell `mod` 8
+        rowEnd   = endCell   `div` 8
+        colEnd   = endCell   `mod` 8
 
-foldfun :: Bool -> Bool -> Bool
-foldfun inti x = (inti && x)
+andAll :: Bool -> Bool -> Bool
+andAll init x = (init && x)
 
-isEmpty :: Square -> Bool
-isEmpty square = (square == Empty)
+isEmpty :: GameState -> Int -> Bool
+isEmpty state index = ((getSquareAt state index) == Empty)

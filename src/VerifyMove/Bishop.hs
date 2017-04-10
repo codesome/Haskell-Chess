@@ -4,38 +4,31 @@ import Types
 import BoardUtils
 
 verifyMove :: GameState -> Int -> Int -> Bool
-verifyMove state startCell endCell = do
-  let   rowStart = startCell `div` 8
-  let   colStart = startCell `mod` 8
-  let   rowEnd   = endCell   `div` 8
-  let   colEnd   = endCell   `mod` 8
-  if (startCell==endCell) || ( (abs (rowStart-rowEnd))/=(abs (colStart-colEnd)) )
-    then False
-    else 
-      if ((rowStart-rowEnd) `div` (colEnd-colStart)) == 1
-        then 
-          (
+verifyMove state startCell endCell
+    | (startCell==endCell) || ( (abs (rowStart-rowEnd))/=(abs (colStart-colEnd)) ) = False
+    | (((rowStart-rowEnd)`div`(colEnd-colStart))==1) = 
+        (
             (startCell > endCell) 
-            && (foldr foldfun True  (map isEmpty (map (getSquareAt state) [(startCell-7),(startCell-14)..(endCell+7)])))
-          )
-          || 
-          (
+            && (foldr andAll True  (map (isEmpty state) [(startCell-7),(startCell-14)..(endCell+7)]))
+        ) || (
             (startCell < endCell) 
-            && (foldr foldfun True (map isEmpty (map (getSquareAt state) [(endCell-7),(endCell-14)..(startCell+7)])))
-          )
-        else 
-          (
-            (startCell > endCell) 
-            && (foldr foldfun True (map isEmpty (map (getSquareAt state) [(startCell-9),(startCell-18)..(endCell+9)])))
-          )
-          || 
-          (
-            (startCell < endCell) 
-            && (foldr foldfun True (map isEmpty (map (getSquareAt state) [(endCell-9),(endCell-18)..(startCell+9)])))
-          )
+            && (foldr andAll True (map (isEmpty state) [(endCell-7),(endCell-14)..(startCell+7)]))
+        )
+    | otherwise = (
+                  (startCell > endCell) 
+                  && (foldr andAll True (map (isEmpty state) [(startCell-9),(startCell-18)..(endCell+9)]))
+                ) || (
+                  (startCell < endCell) 
+                  && (foldr andAll True (map (isEmpty state) [(endCell-9),(endCell-18)..(startCell+9)]))
+                )
+    where
+        rowStart = startCell `div` 8
+        colStart = startCell `mod` 8
+        rowEnd   = endCell   `div` 8
+        colEnd   = endCell   `mod` 8
 
-foldfun :: Bool -> Bool -> Bool
-foldfun inti x = (inti && x)
+andAll :: Bool -> Bool -> Bool
+andAll init x = (init && x)
 
-isEmpty :: Square -> Bool
-isEmpty square = (square == Empty)
+isEmpty :: GameState -> Int -> Bool
+isEmpty state index = ((getSquareAt state index) == Empty)
