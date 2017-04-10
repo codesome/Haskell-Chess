@@ -9,28 +9,6 @@ import qualified VerifyMove.Pawn as Pawn
 import qualified VerifyMove.Queen as Queen
 import qualified VerifyMove.Rook as Rook
 
-
--- board indices (will be removed later)
-sbl :: IO ()
-sbl = do
-    putStrLn "+----+----+----+----+----+----+----+----+"
-    putStrLn "| 00 | 01 | 02 | 03 | 04 | 05 | 06 | 07 |"
-    putStrLn "+----+----+----+----+----+----+----+----+"
-    putStrLn "| 08 | 09 | 10 | 11 | 12 | 13 | 14 | 15 |"
-    putStrLn "+----+----+----+----+----+----+----+----+"
-    putStrLn "| 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 |"
-    putStrLn "+----+----+----+----+----+----+----+----+"
-    putStrLn "| 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 |"
-    putStrLn "+----+----+----+----+----+----+----+----+"
-    putStrLn "| 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 |"
-    putStrLn "+----+----+----+----+----+----+----+----+"
-    putStrLn "| 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 |"
-    putStrLn "+----+----+----+----+----+----+----+----+"
-    putStrLn "| 48 | 49 | 50 | 51 | 52 | 53 | 54 | 55 |"
-    putStrLn "+----+----+----+----+----+----+----+----+"
-    putStrLn "| 56 | 57 | 58 | 59 | 60 | 61 | 62 | 63 |"
-    putStrLn "+----+----+----+----+----+----+----+----+"
-
 -- Checks if a move is valid
 verifyMove :: GameState -> Int -> Int -> Bool
 verifyMove state start end
@@ -82,16 +60,14 @@ togglePlayer (GameState {
         whoWasInCheck=wwic, inProgress=ip,
         whiteKing=wk, blackKing=bk, startPointIsSet=spis,
         startPoint=sp, endPoint=ep, boardPoints=bp, moveEnabled=me
-    }) =
-        if player == PlayerW
-            then (GameState {
+    })
+    | (player == PlayerW) =  (GameState {
                 board=b, turn=PlayerB, wasCheck=wc,
                 whoWasInCheck=wwic, inProgress=ip,
                 whiteKing=wk, blackKing=bk,startPointIsSet=spis,
                 startPoint=sp, endPoint=ep, boardPoints=bp, moveEnabled=me
             })
-
-            else (GameState {
+    | otherwise = (GameState {
                 board=b, turn=PlayerW, wasCheck=wc,
                 whoWasInCheck=wwic, inProgress=ip,
                 whiteKing=wk, blackKing=bk,startPointIsSet=spis,
