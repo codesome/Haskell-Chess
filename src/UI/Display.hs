@@ -7,10 +7,6 @@ import Data.IORef
 import Types
 import BoardUtils
 
-toggleColor :: GLfloat -> GLfloat
-toggleColor c = if c==1 then 0
-                else 1
-
 drawSquare :: BoardSquare -> IO ()
 drawSquare ((x,y,z),(r,g,b),p) = preservingMatrix $ do
             color $ Color3 r g b
@@ -20,7 +16,7 @@ drawSquare ((x,y,z),(r,g,b),p) = preservingMatrix $ do
 
 display :: IORef GameState -> DisplayCallback
 display gameState = do
-    gstate <- get gameState
     clear [ColorBuffer]
+    gstate <- get gameState
     forM_ (getBoardPoints gstate) $ drawSquare
     flush

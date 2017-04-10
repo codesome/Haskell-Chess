@@ -1,7 +1,8 @@
 module UI.Figures where
  
 import Graphics.UI.GLUT
- 
+import Control.Monad
+
 vertex3f :: (GLfloat, GLfloat, GLfloat) -> IO ()
 vertex3f (x, y, z) = vertex $ Vertex3 x y z
  
@@ -10,10 +11,10 @@ drawCube = renderPrimitive Quads $ mapM_ vertex3f
     [(0,0,0),(0,0.25,0),(0.25,0.25,0),(0.25,0,0)]
 
 drawPolygon :: [(Float,Float,Float)] -> IO ()
-drawPolygon l = renderPrimitive Polygon $ mapM_ vertex3f l
+drawPolygon vertices = renderPrimitive Polygon $ mapM_ vertex3f vertices
 
 drawLoop :: [(Float,Float,Float)] -> IO ()
-drawLoop l = renderPrimitive LineLoop $ mapM_ vertex3f l
+drawLoop vertices = renderPrimitive LineLoop $ mapM_ vertex3f vertices
 
 drawPiece :: (Int, GLfloat) -> IO ()
 drawPiece (p, c) = do
@@ -39,68 +40,81 @@ drawPieceFigure p c
         invertedColor = Color3 inverted inverted inverted
 
 --------- ROOK
+rookVertices :: [[(Float, Float, Float)]]
+rookVertices = [
+        -- lower Quad
+        [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ],
+        -- middle Quad
+        [ (0.0875, 0.0625, 0), (0.0875, 0.1875, 0), (0.1625, 0.1875, 0), (0.1625, 0.0625, 0) ],
+        -- upper Quad
+        [ (0.0625, 0.1875, 0), (0.0625, 0.225, 0), (0.1875, 0.225, 0), (0.1875, 0.1875, 0) ]
+    ]
 drawRook :: IO ()
-drawRook = do
-    -- lower Quad
-    drawPolygon [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ]
-    -- middle Quad
-    drawPolygon [ (0.0875, 0.0625, 0), (0.0875, 0.1875, 0), (0.1625, 0.1875, 0), (0.1625, 0.0625, 0) ]
-    -- upper Quad
-    drawPolygon [ (0.0625, 0.1875, 0), (0.0625, 0.225, 0), (0.1875, 0.225, 0), (0.1875, 0.1875, 0) ]
+drawRook = forM_ rookVertices $ drawPolygon
 
 drawRookLoop :: IO ()
-drawRookLoop = do    
-    -- lower Quad
-    drawLoop [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ]
-    -- middle Quad
-    drawLoop [ (0.0875, 0.0625, 0), (0.0875, 0.1875, 0), (0.1625, 0.1875, 0), (0.1625, 0.0625, 0) ]
-    -- upper Quad
-    drawLoop [ (0.0625, 0.1875, 0), (0.0625, 0.225, 0), (0.1875, 0.225, 0), (0.1875, 0.1875, 0) ]
+drawRookLoop = forM_ rookVertices $ drawLoop
+
 
 ---------- PAWN
+pawnVertices1 :: [[(Float,Float,Float)]]
+pawnVertices1 = [ 
+        -- middle quad
+        [ (0.0875, 0.0625, 0), (0.125, 0.1875, 0), (0.1625, 0.0625, 0) ] 
+    ]
+
+pawnVertices2 :: [[(Float,Float,Float)]]
+pawnVertices2 = [ 
+        -- lower quad
+        [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ],
+        -- circle
+        [ (0.125+ 0.04*(cos (2*pi*k/20)), 0.15+ 0.04*(sin (2*pi*k/20)), 0) | k <- [1..20] ]
+    ]
+
 drawPawn :: GLfloat -> IO ()
 drawPawn c = do
-    -- middle quad
-    drawPolygon [ (0.0875, 0.0625, 0), (0.125, 0.1875, 0), (0.1625, 0.0625, 0) ]
-    -- drawPolygon [ (0.075, 0.0625, 0), (0.1, 0.125, 0), (0.15, 0.125, 0), (0.175, 0.0625, 0) ]
+
+    forM_ pawnVertices1 $ drawPolygon
 
     let inv = invertColor c
     color $ Color3 inv inv inv 
     drawPawnLoop1
     
     color $ Color3 c c c
-    -- lower quad
-    drawPolygon [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ]
-    -- circle
-    drawPolygon [ (0.125+ 0.04*(cos (2*pi*k/20)), 0.15+ 0.04*(sin (2*pi*k/20)), 0) | k <- [1..20] ]
     
+    forM_ pawnVertices2 $ drawPolygon
 
     color $ Color3 inv inv inv 
     drawPawnLoop2
 
 drawPawnLoop1 :: IO ()
-drawPawnLoop1 = do
-    -- middle quad
-    drawLoop [ (0.0875, 0.0625, 0), (0.125, 0.1875, 0), (0.1625, 0.0625, 0) ]
-    -- drawLoop [ (0.075, 0.0625, 0), (0.1, 0.125, 0), (0.15, 0.125, 0), (0.175, 0.0625, 0) ]
+drawPawnLoop1 = forM_ pawnVertices1 $ drawLoop
 
 drawPawnLoop2 :: IO ()
-drawPawnLoop2 = do
-    -- lower quad
-    drawLoop [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ]
-    -- circle
-    drawLoop [ (0.125+ 0.04*(cos (2*pi*k/20)), 0.15+ 0.04*(sin (2*pi*k/20)), 0) | k <- [1..20] ]
+drawPawnLoop2 = forM_ pawnVertices2 $ drawLoop
+
 
 -------- BISHOP
+bishopVertices1 :: [[(Float,Float,Float)]]
+bishopVertices1 = [
+        -- lower Quad
+        [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ],
+        -- middle Quad
+        [ (0.0875, 0.0625, 0), (0.125, 0.1875, 0), (0.1625, 0.0625, 0) ],
+        -- small cap
+        [ (0.1, 0.18, 0), (0.125, 0.23, 0), (0.15, 0.18, 0) ]
+    ]
+
+bishopVertices2 :: [[(Float,Float,Float)]]
+bishopVertices2 = [
+        -- big circle
+        [ (0.125+ 0.045*(cos (2*pi*k/20)), 0.15+ 0.045*(sin (2*pi*k/20)), 0) | k <- [1..20] ]
+    ]
+
 drawBishop :: GLfloat -> IO ()
 drawBishop c = do
 
-    -- lower Quad
-    drawPolygon [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ]
-    -- middle Quad
-    drawPolygon [ (0.0875, 0.0625, 0), (0.125, 0.1875, 0), (0.1625, 0.0625, 0) ]
-    -- small cap
-    drawPolygon [ (0.1, 0.18, 0), (0.125, 0.23, 0), (0.15, 0.18, 0) ]
+    forM_ bishopVertices1 $ drawPolygon
     
     let inv = invertColor c
     color $ Color3 inv inv inv 
@@ -108,119 +122,91 @@ drawBishop c = do
     
     color $ Color3 c c c
 
-    -- big circle
-    drawPolygon [ (0.125+ 0.045*(cos (2*pi*k/20)), 0.15+ 0.045*(sin (2*pi*k/20)), 0) | k <- [1..20] ]
+    forM_ bishopVertices2 $ drawPolygon
 
     color $ Color3 inv inv inv 
     drawBishopLoop2
 
 drawBishopLoop1 :: IO ()
-drawBishopLoop1 = do
-    -- lower Quad
-    drawLoop [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ]
-    -- middle Quad
-    drawLoop [ (0.0875, 0.0625, 0), (0.125, 0.1875, 0), (0.1625, 0.0625, 0) ]
-    -- small cap
-    drawLoop [ (0.1, 0.18, 0), (0.125, 0.23, 0), (0.15, 0.18, 0) ]
+drawBishopLoop1 = forM_ bishopVertices1 $ drawLoop
 
 drawBishopLoop2 :: IO ()
-drawBishopLoop2 = do
-    -- big circle
-    drawLoop [ (0.125+ 0.045*(cos (2*pi*k/20)), 0.15+ 0.045*(sin (2*pi*k/20)), 0) | k <- [1..20] ]
+drawBishopLoop2 = forM_ bishopVertices2 $ drawLoop
 
 -------- KING
-drawKing :: IO ()
-drawKing = do
-    -- lower Quad
-    drawPolygon [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ]
-    -- middle Quad
-    drawPolygon [ (0.0875, 0.0625, 0), (0.0875, 0.125, 0), (0.1625, 0.125, 0), (0.1625, 0.0625, 0) ]
-    -- upper Quad
-    drawPolygon [ (0.075, 0.125, 0), (0.075, 0.15, 0), (0.175, 0.15, 0), (0.175, 0.125, 0) ]
+kingVertices :: [[(Float,Float,Float)]]
+kingVertices = [
+        -- lower Quad
+        [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ],
+        -- middle Quad
+        [ (0.0875, 0.0625, 0), (0.0875, 0.125, 0), (0.1625, 0.125, 0), (0.1625, 0.0625, 0) ],
+        -- upper Quad
+        [ (0.075, 0.125, 0), (0.075, 0.15, 0), (0.175, 0.15, 0), (0.175, 0.125, 0) ],
+        
+        -- cross
+        [ (0.0828125, 0.17625, 0), (0.0828125, 0.204375, 0), (0.1671875, 0.204375, 0), (0.1671875, 0.17625, 0) ],
+        [ (0.1109375, 0.15, 0), (0.1109375, 0.2325, 0), (0.1390625, 0.2325, 0), (0.1390625, 0.15, 0) ]
+    ]
 
-    -- cross
-    drawPolygon [  -- horizontal
-            (0.0828125, 0.17625, 0), (0.0828125, 0.204375, 0), 
-            (0.1671875, 0.204375, 0), (0.1671875, 0.17625, 0)
-        ]
-    drawPolygon [ -- vertical
-            (0.1109375, 0.1, 0), (0.1109375, 0.2325, 0), 
-            (0.1390625, 0.2325, 0), (0.1390625, 0.1, 0) 
-        ]
+drawKing :: IO ()
+drawKing = forM_ kingVertices $ drawPolygon
 
 drawKingLoop :: IO ()
-drawKingLoop = do
-    -- lower Quad
-    drawLoop [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ]
-    -- middle Quad
-    drawLoop [ (0.0875, 0.0625, 0), (0.0875, 0.125, 0), (0.1625, 0.125, 0), (0.1625, 0.0625, 0) ]
-    -- upper Quad
-    drawLoop [ (0.075, 0.125, 0), (0.075, 0.15, 0), (0.175, 0.15, 0), (0.175, 0.125, 0) ]
+drawKingLoop = forM_ kingVertices $ drawLoop
 
-    -- cross
-    drawLoop [ -- horizontal
-            (0.0828125, 0.17625, 0), (0.0828125, 0.204375, 0), 
-            (0.1671875, 0.204375, 0), (0.1671875, 0.17625, 0)
-        ]
-    drawLoop [ -- vertical
-            (0.1109375, 0.15, 0), (0.1109375, 0.2325, 0), 
-            (0.1390625, 0.2325, 0), (0.1390625, 0.15, 0) 
-        ]
+--------- QUEEN
+queenVertices :: [[(Float,Float,Float)]]
+queenVertices = [
+        -- lower Quad
+        [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ],
+        -- middle Quad
+        [ (0.0875, 0.0625, 0), (0.1, 0.15, 0), (0.15, 0.15, 0), (0.1625, 0.0625, 0) ],
+        -- neck
+        [ (0.0875, 0.15, 0), (0.1, 0.175, 0), (0.15, 0.175, 0), (0.1625, 0.15, 0) ],
+        -- top
+        [ (0.1, 0.175, 0), (0.075, 0.22, 0), (0.175, 0.22, 0), (0.15, 0.175, 0) ]
+    ]
 
 drawQueen :: IO ()
-drawQueen = do
-    -- lower Quad
-    drawPolygon [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ]
-    -- middle Quad
-    drawPolygon [ (0.0875, 0.0625, 0), (0.1, 0.1875, 0), (0.15, 0.1875, 0), (0.1625, 0.0625, 0) ]
-    -- neck
-    drawPolygon [ (0.0875, 0.15, 0), (0.1, 0.175, 0), (0.15, 0.175, 0), (0.1625, 0.15, 0) ]
-    -- top
-    drawPolygon [ (0.1, 0.175, 0), (0.075, 0.22, 0), (0.175, 0.22, 0), (0.15, 0.175, 0) ]
+drawQueen = forM_ queenVertices $ drawPolygon
 
 drawQueenLoop :: IO ()
-drawQueenLoop = do
-    -- lower Quad
-    drawLoop [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ]
-    -- middle Quad
-    drawLoop [ (0.0875, 0.0625, 0), (0.1, 0.15, 0), (0.15, 0.15, 0), (0.1625, 0.0625, 0) ]
-    -- neck
-    drawLoop [ (0.0875, 0.15, 0), (0.1, 0.175, 0), (0.15, 0.175, 0), (0.1625, 0.15, 0) ]
-    -- top
-    drawLoop [ (0.1, 0.175, 0), (0.075, 0.22, 0), (0.175, 0.22, 0), (0.15, 0.175, 0) ]
+drawQueenLoop = forM_ queenVertices $ drawLoop
 
+--------- KNIGHT
+knightVertices1 :: [[(Float,Float,Float)]]
+knightVertices1 = [
+        -- lower quad
+        [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ],
+        -- middle quad
+        [ (0.0775, 0.0625, 0), (0.15, 0.2, 0), (0.165, 0.0625, 0) ]
+    ]
+
+knightVertices2 :: [[(Float,Float,Float)]]
+knightVertices2 = [
+        -- head
+        [ (0.15, 0.22, 0), (0.157, 0.13, 0), (0.05, 0.1, 0), (0.05, 0.14, 0)],
+        -- eye
+        [ (0.115+ 0.01*(cos (2*pi*k/20)), 0.16+ 0.01*(sin (2*pi*k/20)), 0) | k <- [1..20] ]
+    ]
 
 drawKnight :: GLfloat -> IO ()
 drawKnight c = do
-    -- lower quad
-    drawPolygon [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ]
-    -- middle quad
-    drawPolygon [ (0.0775, 0.0625, 0), (0.15, 0.2, 0), (0.165, 0.0625, 0) ]
+    forM_ knightVertices1 $ drawPolygon
 
     let inv = invertColor c
     color $ Color3 inv inv inv 
     drawKnightLoop1
     
     color $ Color3 c c c
-    -- head
-    drawPolygon [ (0.15, 0.22, 0), (0.157, 0.13, 0), (0.05, 0.1, 0), (0.05, 0.14, 0)]
+
+    forM_ knightVertices2 $ drawPolygon
 
     color $ Color3 inv inv inv 
     drawKnightLoop2
 
 drawKnightLoop1 :: IO ()
-drawKnightLoop1 = do
-    -- lower quad
-    drawLoop [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ]
-    -- middle quad
-    drawLoop [ (0.0775, 0.0625, 0), (0.15, 0.2, 0), (0.165, 0.0625, 0) ]
-
+drawKnightLoop1 = forM_ knightVertices1 $ drawLoop
 
 drawKnightLoop2 :: IO ()
-drawKnightLoop2 = do
-    -- head
-    drawLoop [ (0.15, 0.22, 0), (0.157, 0.13, 0), (0.05, 0.1, 0), (0.05, 0.14, 0)]
-    -- eye
-    drawLoop [ (0.115+ 0.01*(cos (2*pi*k/20)), 0.16+ 0.01*(sin (2*pi*k/20)), 0) | k <- [1..20] ]
-
-
+drawKnightLoop2 = forM_ knightVertices2 $ drawLoop

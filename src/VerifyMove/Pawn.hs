@@ -15,7 +15,7 @@ verifyMove state start end col = do
     if (piece /= Empty) && (rowStart/=rowEnd)
         then 
             if (colStart==colEnd) -- same column 
-            then ( 
+            then (getSquareColor (getSquareAt state end))/=oppcolor && ( 
                  ((rowStart-rowEnd)==1) -- moved only 1 square
                  || ( 
                      rowStart==6
