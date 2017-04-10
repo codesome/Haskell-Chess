@@ -29,7 +29,7 @@ drawPieceFigure :: Int -> GLfloat -> IO ()
 drawPieceFigure p c
     | p==1 = drawBishop c
     | p==2 = do drawKing; color $ invertedColor ; drawKingLoop;
-    | p==3 = do drawKnight; color $ invertedColor ; drawKnightLoop;
+    | p==3 = drawKnight c
     | p==4 = drawPawn c
     | p==5 = do drawQueen; color $ invertedColor ; drawQueenLoop;
     | p==6 = do drawRook; color $ invertedColor ; drawRookLoop;
@@ -190,14 +190,37 @@ drawQueenLoop = do
     drawLoop [ (0.1, 0.175, 0), (0.075, 0.22, 0), (0.175, 0.22, 0), (0.15, 0.175, 0) ]
 
 
-drawKnight :: IO () -- TODO
-drawKnight = do
+drawKnight :: GLfloat -> IO ()
+drawKnight c = do
+    -- lower quad
     drawPolygon [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ]
+    -- middle quad
+    drawPolygon [ (0.0775, 0.0625, 0), (0.15, 0.2, 0), (0.165, 0.0625, 0) ]
 
+    let inv = invertColor c
+    color $ Color3 inv inv inv 
+    drawKnightLoop1
+    
+    color $ Color3 c c c
+    -- head
+    drawPolygon [ (0.15, 0.22, 0), (0.157, 0.13, 0), (0.05, 0.1, 0), (0.05, 0.14, 0)]
 
-drawKnightLoop :: IO () -- TODO
-drawKnightLoop = do
+    color $ Color3 inv inv inv 
+    drawKnightLoop2
+
+drawKnightLoop1 :: IO ()
+drawKnightLoop1 = do
+    -- lower quad
     drawLoop [ (0.05, 0.025, 0), (0.05, 0.0625, 0), (0.2, 0.0625, 0), (0.2, 0.025, 0) ]
+    -- middle quad
+    drawLoop [ (0.0775, 0.0625, 0), (0.15, 0.2, 0), (0.165, 0.0625, 0) ]
 
+
+drawKnightLoop2 :: IO ()
+drawKnightLoop2 = do
+    -- head
+    drawLoop [ (0.15, 0.22, 0), (0.157, 0.13, 0), (0.05, 0.1, 0), (0.05, 0.14, 0)]
+    -- eye
+    drawLoop [ (0.115+ 0.01*(cos (2*pi*k/20)), 0.16+ 0.01*(sin (2*pi*k/20)), 0) | k <- [1..20] ]
 
 
