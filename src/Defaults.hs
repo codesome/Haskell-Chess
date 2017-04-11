@@ -2,11 +2,10 @@ module Defaults where
 
 import Types
 
--- Board at the start of the game
-
 emptyRow :: [Square]
 emptyRow = [Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty]
 
+-- initial game board for white
 initialGameBoardW :: Board
 initialGameBoardW = [
         [bRook, bKnight, bBishop, bQueen, bKing, bBishop, bKnight, bRook],
@@ -16,6 +15,7 @@ initialGameBoardW = [
         [wRook, wKnight, wBishop, wQueen, wKing, wBishop, wKnight, wRook]
     ]
 
+-- initial game board for black
 initialGameBoardB :: Board
 initialGameBoardB = [
         [wRook, wKnight, wBishop, wKing, wQueen, wBishop, wKnight, wRook],
@@ -25,6 +25,7 @@ initialGameBoardB = [
         [bRook, bKnight, bBishop, bKing, bQueen, bBishop, bKnight, bRook]
     ]
 
+-- 4 empty rows in between the pieces
 initialEmptyDisplayPoints :: [BoardSquare]
 initialEmptyDisplayPoints = [
 
@@ -38,6 +39,7 @@ initialEmptyDisplayPoints = [
     
     ]
 
+-- initial display board points for white
 initialDisplayPointsW :: [BoardSquare]
 initialDisplayPointsW = [
 
@@ -53,6 +55,7 @@ initialDisplayPointsW = [
 
         ]
 
+-- initial display board points for black
 initialDisplayPointsB :: [BoardSquare]
 initialDisplayPointsB = [
 
@@ -68,7 +71,7 @@ initialDisplayPointsB = [
 
         ]
 
--- GameState at the start of the game
+-- GameState for white at the start of the game
 initialGameStateW :: GameState
 initialGameStateW = GameState {
     board = initialGameBoardW,
@@ -85,6 +88,7 @@ initialGameStateW = GameState {
     moveEnabled=True
 }
 
+-- GameState for black at the start of the game
 initialGameStateB :: GameState
 initialGameStateB = GameState {
     board = initialGameBoardB,
