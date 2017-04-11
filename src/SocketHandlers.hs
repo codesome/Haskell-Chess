@@ -17,3 +17,25 @@ handleMessage sock callback = do
     (handle, host, port) <- accept sock
     output <- hGetLine handle
     callback output
+
+printAndFlush :: String -> IO ()
+printAndFlush msg = do
+    putStrLn ("\x1b[32mopponent>\x1b[37m " ++ msg)
+    hFlush stdout
+
+handleChatMessage :: Socket -> IO ()
+handleChatMessage sock = do
+    (handle, host, port) <- accept sock
+    output <- hGetLine handle
+    printAndFlush output
+    handleChatMessage sock
+
+sendChatMessage :: String -> PortID -> IO ()
+sendChatMessage host port = do 
+        msg <- getLine
+        putStrLn ("you> " ++ msg)
+        withSocketsDo $ do
+            handle <- connectTo host port
+            hPutStr handle msg
+            hClose handle
+            sendChatMessage host port

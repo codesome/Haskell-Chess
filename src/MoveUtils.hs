@@ -26,7 +26,6 @@ verifyMove state start end
         pcolor = getSquareColor square
         turn = getTurn state
         validMove =  (start>=0 && start<=63 && end>=0 && end<=63)
-            && not (checkForGameCheck state (getKingPos state pcolor) pcolor)
             && (
                 ((turn==PlayerW) && (pcolor==White))
                 || ((turn==PlayerB) && (pcolor==Black))

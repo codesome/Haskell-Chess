@@ -13,3 +13,7 @@ import GameUtils
 import MoveUtils
 import Defaults
 import Main
+import UI.ConsoleDisplay
+import UI.Bindings
+import UI.Display
+import UI.Figures

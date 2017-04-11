@@ -56,6 +56,8 @@ resetColor gameState index
         oddRow = (row `mod` 2)==0
         oddCol = (col `mod` 2)==0
 
+resetToState :: GameState -> GameState -> GameState
+resetToState previous _ = previous
 
 -- leftButtonHandler :: GLint -> GLint -> GameState -> GameState
 -- leftButtonHandler x y gameState = do
@@ -144,7 +146,6 @@ rightButtonHandlerUtil x y gameState
         index = getIndex x y
         startPoint = getStartPoint gameState
 
-
 rightButtonHandler :: GLint -> GLint -> IORef GameState -> Socket -> IORef (String -> IO ()) -> IO ()
 rightButtonHandler x y gameState sock s = do
     gstate <- get gameState
@@ -154,12 +155,19 @@ rightButtonHandler x y gameState sock s = do
             gameState $~! (rightButtonHandlerUtil x y)
 
             gstate2 <- get gameState
+
             if not (getMoveEnabled gstate2)
                 then do
-                    sender <- get s
-                    sender ((show (63-startPoint))++":"++(show $ (63-(getIndex x y))))
-                    forkIO $ opponentMoveHandler gameState sock
-                    updateConsole False False
+                    let pcolor = getSquareColor (getSquareAt gstate startPoint)
+                    if (checkForGameCheck gstate2 (getKingPos gstate2 pcolor) pcolor)
+                        then do
+                            gameState $~! (resetToState gstate)
+                            addMessage "Watch out! You will get into check."
+                        else do
+                            sender <- get s
+                            sender ((show (63-startPoint))++":"++(show $ (63-(getIndex x y))))
+                            forkIO $ opponentMoveHandler gameState sock
+                            updateConsole False False
                 else 
                     addMessage "That move is invalid"
 

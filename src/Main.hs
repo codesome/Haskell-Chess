@@ -30,12 +30,17 @@ main =
             let mycolor = _args!!3
             
             sock <- listenOn $ PortNumber (toEnum myport::PortNumber)
+            chatsock <- listenOn $ PortNumber (toEnum (myport+1)::PortNumber)
             putStrLn "Starting server ..."
-
 
             putStr "Press [Enter] when other player is ready"
             hFlush stdout
             _ <- getLine
+
+            putStrLn "\x1b[35mEnter anything and press enter to send message to your opponent!\x1b[37m"
+
+            forkIO $ handleChatMessage chatsock
+            forkIO $ sendChatMessage host (PortNumber (toEnum (port+1)::PortNumber))
 
             initialWindowSize $= Size 600 600
             _window <- createWindow "Haskell Chess"
