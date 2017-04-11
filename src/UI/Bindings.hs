@@ -7,11 +7,13 @@ import System.Exit ( exitWith, ExitCode(ExitSuccess) )
 import Data.IORef
 import Types
 import BoardUtils
+import GameUtils
 import MoveUtils
 import Network
 import Control.Concurrent
 import SocketHandlers
 import Data.List.Split
+import UI.ConsoleDisplay
 
 reshape :: ReshapeCallback
 reshape size = do 
@@ -74,9 +76,30 @@ resetColor gameState index
 
 leftButtonHandler :: GLint -> GLint -> GameState -> GameState
 leftButtonHandler x y gameState
-    | (not (isStartPointSet gameState)) = (setStartPointIsSet (setStartPoint (colorThisAsFirst gameState index) index) True)
-    | (previousStart==index) = (setStartPointIsSet (resetColor gameState index) False)
-    | otherwise = (setStartPoint (colorThisAsFirst (resetColor gameState (getStartPoint gameState)) index) index)
+    | (not (isStartPointSet gameState)) = 
+        (setStartPointIsSet 
+            (setStartPoint 
+                (colorThisAsFirst gameState index) 
+                index
+            ) 
+            True
+        )
+    | (previousStart==index) = 
+        (setStartPointIsSet 
+            (resetColor gameState index) 
+            False
+        )
+    | otherwise = 
+        (setStartPoint 
+            (colorThisAsFirst 
+                (resetColor 
+                    gameState 
+                    (getStartPoint gameState)
+                ) 
+                index
+            ) 
+            index
+        )
     where
         index = getIndex x y
         previousStart = getStartPoint gameState
@@ -101,7 +124,21 @@ leftButtonHandler x y gameState
 
 rightButtonHandlerUtil :: GLint -> GLint -> GameState -> GameState
 rightButtonHandlerUtil x y gameState
-    | (isStartPointSet gameState) && (verifyMove gameState startPoint index) = (setStartPointIsSet (resetColor (resetColor (moveFromTo (disableMove gameState) startPoint index) startPoint) index) False)
+    | (isStartPointSet gameState) && (verifyMove gameState startPoint index) = 
+        (setStartPointIsSet 
+            (resetColor 
+                (resetColor 
+                    (moveFromTo 
+                        (disableMove gameState) 
+                        startPoint 
+                        index
+                    ) 
+                    startPoint
+                ) 
+                index
+            ) 
+            False
+        )
     | otherwise = gameState
     where
         index = getIndex x y
@@ -122,9 +159,9 @@ rightButtonHandler x y gameState sock s = do
                     sender <- get s
                     sender ((show (63-startPoint))++":"++(show $ (63-(getIndex x y))))
                     forkIO $ opponentMoveHandler gameState sock
-                    putStr ""
+                    updateConsole False False
                 else 
-                    putStr ""
+                    addMessage "That move is invalid"
 
         else 
             putStr ""
@@ -138,7 +175,13 @@ opponentMoveHandlerUtil gameState move =
         l = splitOn ":" move
         from = read (l!!0) :: Int
         to = read (l!!1) :: Int
-    in gameState $~! (opponentMove from to)
+    in do 
+        gameState $~! (opponentMove from to)
+        gstate <- get gameState
+        let pcolor = if (getTurn gstate)==PlayerW then White else Black
+        if (checkForGameCheck gstate (getKingPos gstate pcolor) pcolor)
+            then updateConsole True True
+            else updateConsole True False
 
 opponentMoveHandler :: IORef GameState -> Socket -> IO ()
 opponentMoveHandler gameState sock = handleMessage sock $ opponentMoveHandlerUtil gameState

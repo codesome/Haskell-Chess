@@ -81,6 +81,11 @@ isInProgress (GameState {
     startPoint=_, endPoint=_, boardPoints=_, moveEnabled=_
     }) = ip
 
+getKingPos :: GameState -> PColor -> Int
+getKingPos state color 
+    | color==White = getWhiteKingPos state
+    | otherwise = getBlackKingPos state
+
 getWhiteKingPos :: GameState -> Int
 getWhiteKingPos (GameState {
     board=_, turn=_, wasCheck=_,
