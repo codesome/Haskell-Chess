@@ -24,7 +24,7 @@ verifyMove state start end col
     where
         rowStart = start `div` 8
         colStart = start `mod` 8
-        rowEnd = end `div` 8
-        colEnd = end `mod` 8
+        rowEnd   = end `div` 8
+        colEnd   = end `mod` 8
         oppcolor = if col==White then Black else White
-        piece = getSquareAt state start
+        piece    = getSquareAt state start

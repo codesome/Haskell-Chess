@@ -8,12 +8,22 @@ import Graphics.UI.GLUT (GLfloat)
 -- get color of a square
 getSquareColor :: Square -> PColor
 getSquareColor (Piece pc pt) = pc
-getSquareColor (Empty) = NoColor
+getSquareColor (Empty)       = NoColor
 
 -- get type of a square
 getSquareType :: Square -> PType
 getSquareType (Piece pc pt) = pt
-getSquareType (Empty) = NoType
+getSquareType (Empty)       = NoType
+
+getPTypeStr :: PType -> String
+getPTypeStr pt = case pt of
+    Bishop    -> "Bishop"
+    King      -> "King"
+    Knight    -> "Knight"
+    Pawn      -> "Pawn"
+    Queen     -> "Queen"
+    Rook      -> "Rook"
+    otherwise -> ""
 
 {-/ Square utils -}
 
@@ -67,7 +77,7 @@ getTurn (GameState {
 getKingPos :: GameState -> PColor -> Int
 getKingPos state color 
     | color==White = getWhiteKingPos state
-    | otherwise = getBlackKingPos state
+    | otherwise    = getBlackKingPos state
 
 -- 'whiteKing'
 getWhiteKingPos :: GameState -> Int

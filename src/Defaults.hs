@@ -75,32 +75,32 @@ initialDisplayPointsB = [
 initialGameStateW :: GameState
 initialGameStateW = GameState {
     board = initialGameBoardW,
-    turn = PlayerW,
-    wasCheck = False,
-    whoWasInCheck = Nothing,
-    inProgress = True,
-    whiteKing=60,
-    blackKing=4,
-    startPointIsSet=False,
-    startPoint=0, 
-    endPoint=0,
-    boardPoints=initialDisplayPointsW, 
-    moveEnabled=True
+    turn            = PlayerW,
+    wasCheck        = False,
+    whoWasInCheck   = Nothing,
+    inProgress      = True,
+    whiteKing       =60,
+    blackKing       =4,
+    startPointIsSet =False,
+    startPoint      =0, 
+    endPoint        =0,
+    boardPoints     =initialDisplayPointsW, 
+    moveEnabled     =True
 }
 
 -- GameState for black at the start of the game
 initialGameStateB :: GameState
 initialGameStateB = GameState {
-    board = initialGameBoardB,
-    turn = PlayerB,
-    wasCheck = False,
-    whoWasInCheck = Nothing,
-    inProgress = True,
-    whiteKing=3,
-    blackKing=59,
-    startPointIsSet=False,
-    startPoint=0, 
-    endPoint=0,
-    boardPoints= initialDisplayPointsB, 
-    moveEnabled=True
+    board           = initialGameBoardB,
+    turn            = PlayerB,
+    wasCheck        = False,
+    whoWasInCheck   = Nothing,
+    inProgress      = True,
+    whiteKing       =3,
+    blackKing       =59,
+    startPointIsSet =False,
+    startPoint      =0, 
+    endPoint        =0,
+    boardPoints     = initialDisplayPointsB, 
+    moveEnabled     =True
 }

@@ -17,18 +17,19 @@ import qualified VerifyMove.Rook as Rook
 verifyMove :: GameState -> Int -> Int -> Bool
 verifyMove state start end
     | not validMove = False
-    | (ptype==Bishop) = (Bishop.verifyMove state start end)
-    | (ptype==King) = (King.verifyMove state start end)
-    | (ptype==Knight) = (Knight.verifyMove state start end)
-    | (ptype==Pawn) = (Pawn.verifyMove state start end pcolor)
-    | (ptype==Queen) = (Queen.verifyMove state start end)
-    | (ptype==Rook) = (Rook.verifyMove state start end)
-    | otherwise = False
+    | otherwise = case ptype of  
+                    Bishop    -> (Bishop.verifyMove state start end)
+                    King      -> (King.verifyMove state start end)
+                    Knight    -> (Knight.verifyMove state start end)
+                    Pawn      -> (Pawn.verifyMove state start end pcolor)
+                    Queen     -> (Queen.verifyMove state start end)
+                    Rook      -> (Rook.verifyMove state start end)
+                    otherwise -> False
     where
-        square = (getSquareAt state start)
-        ptype = getSquareType square
-        pcolor = getSquareColor square
-        turn = getTurn state
+        square    = (getSquareAt state start)
+        ptype     = getSquareType square
+        pcolor    = getSquareColor square
+        turn      = getTurn state
         validMove =  (start>=0 && start<=63 && end>=0 && end<=63) -- index in range
             && ( -- moved own piece
                 ((turn==PlayerW) && (pcolor==White))

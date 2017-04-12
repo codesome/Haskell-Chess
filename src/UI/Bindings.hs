@@ -16,19 +16,19 @@ import Data.List.Split
 import UI.ConsoleDisplay
 
 reshape :: ReshapeCallback
-reshape size = do 
+reshape size =
     -- viewport $= (Position 0 0, (Size 600 600))
     windowSize $= Size 600 600
 
 getXYIndex :: GLint -> Int
 getXYIndex x 
-    | x<75 = 0
-    | x<150 = 1
-    | x<225 = 2
-    | x<300 = 3
-    | x<375 = 4
-    | x<450 = 5
-    | x<525 = 6
+    | x<75      = 0
+    | x<150     = 1
+    | x<225     = 2
+    | x<300     = 3
+    | x<375     = 4
+    | x<450     = 5
+    | x<525     = 6
     | otherwise = 7
 
 getIndex :: GLint -> GLint -> Int
@@ -51,8 +51,8 @@ resetColor gameState index
     | (oddRow && (not oddCol)) || ((not oddRow) && oddCol)  = setBoardPointColorAt gameState index blackColor
     | otherwise = setBoardPointColorAt gameState index whiteColor
     where 
-        row = index `div` 8
-        col = index `mod` 8
+        row    = index `div` 8
+        col    = index `mod` 8
         oddRow = (row `mod` 2)==0
         oddCol = (col `mod` 2)==0
 
@@ -108,14 +108,14 @@ rightButtonHandlerUtil x y gameState
         )
     | otherwise = gameState
     where
-        index = getIndex x y
+        index      = getIndex x y
         startPoint = getStartPoint gameState
 
 rightButtonHandler :: GLint -> GLint -> IORef GameState -> Socket -> IORef (String -> IO ()) -> IO ()
 rightButtonHandler x y gameState sock s = (get gameState) >>= (\gstate ->
     if (getMoveEnabled gstate)
         then (\startPoint ->
-            (gameState $~! (rightButtonHandlerUtil x y)) >>= 
+            (gameState $~! (rightButtonHandlerUtil x y)) >>=
                 (\_ -> 
                 (get gameState) >>= (\gstate2 -> 
                         if not (getMoveEnabled gstate2)
@@ -124,12 +124,11 @@ rightButtonHandler x y gameState sock s = (get gameState) >>= (\gstate ->
                                     then 
                                         (gameState $~! (resetToState gstate)) >>=
                                             (\_ -> addMessage "Watch out! You will get into check.")
-                                    else do
-                                        (get s) >>= (\sender -> 
-                                                sender ((show (63-startPoint))++":"++(show $ (63-(getIndex x y))))
-                                            )
-                                        forkIO $ opponentMoveHandler gameState sock
-                                        updateConsole False False
+                                    else
+                                        (get s) >>= 
+                                            (\sender -> sender ((show (63-startPoint))++":"++(show $ (63-(getIndex x y)))) ) >>= 
+                                            (\_ -> forkIO $ opponentMoveHandler gameState sock ) >>= 
+                                            (\_ -> updateConsole False False )
                                 ) $ getSquareColor (getSquareAt gstate startPoint)
                             else 
                                 addMessage "That move is invalid"
@@ -143,29 +142,43 @@ rightButtonHandler x y gameState sock s = (get gameState) >>= (\gstate ->
 opponentMove :: Int -> Int -> GameState -> GameState
 opponentMove from to gameState =  enableMove $ moveFromTo gameState from to
 
+pieceKillMessage :: IORef GameState -> Int -> IO ()
+pieceKillMessage gameState to = 
+    (get gameState) >>= (\gstate -> 
+        (\piece -> 
+            if piece==Empty
+                then putStr ""
+                else addMessage $ "Your " ++ (getPTypeStr $ getSquareType piece) ++ " was killed!"
+        ) $ getSquareAt gstate to
+    )
+
 opponentMoveHandlerUtil :: IORef GameState -> String -> IO ()
 opponentMoveHandlerUtil gameState move =
     (\(from,to) ->
-        (gameState $~! (opponentMove from to)) >>=
-            (\_ ->
-                (get gameState) >>= 
-                    (\gstate ->
-                        (\pcolor ->
-                            if (checkForGameCheck gstate (getKingPos gstate pcolor) pcolor)
-                                then updateConsole True True
-                                else updateConsole True False
-                        ) $ if (getTurn gstate)==PlayerW then White else Black
-                    ) 
-            )
+        (pieceKillMessage gameState to) >>=
+        (\_ ->
+            (gameState $~! (opponentMove from to)) >>=
+                (\_ ->
+                    (get gameState) >>= 
+                        (\gstate ->
+                            (\pcolor ->
+                                if (checkForGameCheck gstate (getKingPos gstate pcolor) pcolor)
+                                    then updateConsole True True
+                                    else updateConsole True False
+                            ) $ if (getTurn gstate)==PlayerW then White else Black
+                        ) 
+                )
+        )
     ) $ (\l -> (read (l!!0) :: Int, read (l!!1) :: Int)) $ (splitOn ":" move)
 
 opponentMoveHandler :: IORef GameState -> Socket -> IO ()
 opponentMoveHandler gameState sock = handleMessage sock $ opponentMoveHandlerUtil gameState
 
 keyboardMouse :: IORef GameState -> Socket -> IORef (String -> IO ()) -> KeyboardMouseCallback
-keyboardMouse gameState sock sender _key Down _ (Position x y) = case _key of
-    (MouseButton LeftButton) -> gameState $~! (leftButtonHandler x y)
-    (MouseButton RightButton) -> (rightButtonHandler x y gameState sock sender)
-    (Char 'q') -> exitWith ExitSuccess
-    _ -> return ()
+keyboardMouse gameState sock sender _key Down _ (Position x y) = 
+    case _key of
+        (MouseButton LeftButton)  -> gameState $~! (leftButtonHandler x y)
+        (MouseButton RightButton) -> (rightButtonHandler x y gameState sock sender)
+        (Char 'q')                -> exitWith ExitSuccess
+        otherwise                 -> return ()
 keyboardMouse _ _ _ _ _ _ _ = return ()

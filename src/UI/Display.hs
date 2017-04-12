@@ -15,8 +15,8 @@ drawSquare ((x,y,z),(r,g,b),p) = preservingMatrix $ do
             drawPiece p
 
 display :: IORef GameState -> DisplayCallback
-display gameState = do
-    clear [ColorBuffer]
-    gstate <- get gameState
-    forM_ (getBoardPoints gstate) $ drawSquare
-    flush
+display gameState = (clear [ColorBuffer]) >>= (\_ -> 
+            (get gameState) >>= (\gstate ->
+                    (forM_ (getBoardPoints gstate) $ drawSquare) >>= (\_ -> flush )
+                )
+        )

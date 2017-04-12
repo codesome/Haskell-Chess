@@ -24,34 +24,35 @@ main =
 
         if length _args==4 then do
             
-            let myport = read $ (_args!!0) :: Int 
-            let host = (_args!!1)
-            let port = read $ (_args!!2) :: Int
+            let myport  = read $ (_args!!0) :: Int 
+            let host    = (_args!!1)
+            let port    = read $ (_args!!2) :: Int
             let mycolor = _args!!3
             
             sock <- listenOn $ PortNumber (toEnum myport::PortNumber)
-            -- chatsock <- listenOn $ PortNumber (toEnum (myport+1)::PortNumber)
-            putStrLn "Starting server ..."
 
+            putStrLn "Starting server ..."
             putStr "Press [Enter] when other player is ready"
             hFlush stdout
             _ <- getLine
-
             putStrLn "\x1b[35mEnter anything and press enter to send message to your opponent!\x1b[37m"
 
+            ------- Initiating chat server
+            -- to receive messages
             (listenOn $ PortNumber (toEnum (myport+1)::PortNumber)) >>=
                 (\chatsock ->
-                    forkIO $ handleChatMessage chatsock
-                )
-                
+                    forkIO $ handleChatMessage chatsock)
+            
+            -- to send messages
             forkIO $ sendChatMessage host (PortNumber (toEnum (port+1)::PortNumber))
+            ------- / chat server
 
             initialWindowSize $= Size 600 600
             _ <- createWindow "Haskell Chess"
 
             let initGameState = if mycolor=="white"
-                                    then (enableMove initialGameStateW)
-                                    else (disableMove initialGameStateB)
+                                then (enableMove initialGameStateW)
+                                else (disableMove initialGameStateB)
 
             gameState <- newIORef initGameState
 
@@ -61,11 +62,11 @@ main =
                     putStr ""
                 else putStr ""
 
-            -- sender
+            -- move sender
             sender <- newIORef (sendMessageUtil host (PortNumber (toEnum port::PortNumber)))
             
-            displayCallback $= display gameState
-            reshapeCallback $= Just reshape
+            displayCallback       $= display gameState
+            reshapeCallback       $= Just reshape
             keyboardMouseCallback $= Just (keyboardMouse gameState sock sender)
             mainLoop
         else
