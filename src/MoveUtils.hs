@@ -45,9 +45,10 @@ changePieceFromTo state from to = (\p ->
 -- Move a piece in 'board'
 moveFromTo :: GameState -> Int -> Int -> GameState
 moveFromTo state from to = (\startSquare intermediateState -> 
-        if (startSquare==wKing)
-            then setWhiteKingPos (setSquareAt intermediateState to startSquare) to
-            else if (startSquare==bKing)
-                then setBlackKingPos (setSquareAt intermediateState to startSquare) to
-                else setSquareAt intermediateState to startSquare
+        (\newState -> (changePieceFromTo newState from to) ) $
+            if (startSquare==wKing)
+                then setWhiteKingPos (setSquareAt intermediateState to startSquare) to
+                else if (startSquare==bKing)
+                    then setBlackKingPos (setSquareAt intermediateState to startSquare) to
+                    else setSquareAt intermediateState to startSquare
     ) (getSquareAt state from) (setSquareAt state from (Empty))
