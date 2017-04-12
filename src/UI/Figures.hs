@@ -72,20 +72,19 @@ pawnVertices2 = [
     ]
 
 drawPawn :: GLfloat -> IO ()
-drawPawn c = do
+drawPawn c = (\inv -> do
+        forM_ pawnVertices1 $ drawPolygon
 
-    forM_ pawnVertices1 $ drawPolygon
+        color $ Color3 inv inv inv 
+        drawPawnLoop1
+        
+        color $ Color3 c c c
+        forM_ pawnVertices2 $ drawPolygon
 
-    let inv = invertColor c
-    color $ Color3 inv inv inv 
-    drawPawnLoop1
-    
-    color $ Color3 c c c
-    
-    forM_ pawnVertices2 $ drawPolygon
+        color $ Color3 inv inv inv 
+        drawPawnLoop2
+    ) $ invertColor c
 
-    color $ Color3 inv inv inv 
-    drawPawnLoop2
 
 drawPawnLoop1 :: IO ()
 drawPawnLoop1 = forM_ pawnVertices1 $ drawLoop
@@ -112,20 +111,19 @@ bishopVertices2 = [
     ]
 
 drawBishop :: GLfloat -> IO ()
-drawBishop c = do
+drawBishop c = (\inv -> do
+        forM_ bishopVertices1 $ drawPolygon
+        
+        color $ Color3 inv inv inv 
+        drawBishopLoop1
+        
+        color $ Color3 c c c
+        forM_ bishopVertices2 $ drawPolygon
 
-    forM_ bishopVertices1 $ drawPolygon
-    
-    let inv = invertColor c
-    color $ Color3 inv inv inv 
-    drawBishopLoop1
-    
-    color $ Color3 c c c
+        color $ Color3 inv inv inv 
+        drawBishopLoop2
+    ) $ invertColor c
 
-    forM_ bishopVertices2 $ drawPolygon
-
-    color $ Color3 inv inv inv 
-    drawBishopLoop2
 
 drawBishopLoop1 :: IO ()
 drawBishopLoop1 = forM_ bishopVertices1 $ drawLoop
@@ -191,19 +189,18 @@ knightVertices2 = [
     ]
 
 drawKnight :: GLfloat -> IO ()
-drawKnight c = do
-    forM_ knightVertices1 $ drawPolygon
+drawKnight c = (\inv -> do
+        forM_ knightVertices1 $ drawPolygon
 
-    let inv = invertColor c
-    color $ Color3 inv inv inv 
-    drawKnightLoop1
-    
-    color $ Color3 c c c
+        color $ Color3 inv inv inv 
+        drawKnightLoop1
+        
+        color $ Color3 c c c
+        forM_ knightVertices2 $ drawPolygon
 
-    forM_ knightVertices2 $ drawPolygon
-
-    color $ Color3 inv inv inv 
-    drawKnightLoop2
+        color $ Color3 inv inv inv 
+        drawKnightLoop2
+    ) $ invertColor c
 
 drawKnightLoop1 :: IO ()
 drawKnightLoop1 = forM_ knightVertices1 $ drawLoop

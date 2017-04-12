@@ -133,17 +133,13 @@ isStartPointSet (GameState {
 
 -- get square from 'board' at given index (0-63)
 getSquareAt :: GameState -> Int -> Square
-getSquareAt state index =
-    let board = getBoard state
-        row = index `div` 8
-        col = index `mod` 8
-    in ((board !! row) !! col)
+getSquareAt state index = (\board row col ->
+        ((board !! row) !! col)
+    ) (getBoard state) (index `div` 8) (index `mod` 8)
 
 -- get display point from 'boardPoints' at given index (0-63)
 getBoardPieceAt :: GameState -> Int -> (Int,GLfloat)
-getBoardPieceAt state index =
-    let (_,_,p) = ((getBoardPoints state) !! index)
-    in p
+getBoardPieceAt state index = (\(_,_,p) -> p) ((getBoardPoints state) !! index)
 
 
 -------------- SET
@@ -156,23 +152,15 @@ setSquareAt (GameState {
     inProgress=ip, whiteKing=wk, 
     blackKing=bk , startPointIsSet=spis, moveEnabled=me,
     startPoint=sp, endPoint=ep, boardPoints=bp }) pos square =
-    let
-
-        row = pos `div` 8
-        col = pos `mod` 8
-
-        (r1,_:r2) = splitAt row board
-        (c1,_:c2) = splitAt col (board!!row)
-
-        newState = GameState { 
+    (\(r1,_:r2) (c1,_:c2) ->
+        (GameState { 
             board= (r1 ++ (c1++(square:c2)):r2) , 
             turn=t,  wasCheck=wc, 
             whoWasInCheck=wwic, inProgress=ip, moveEnabled=me,
             whiteKing=wk, blackKing=bk , startPointIsSet=spis,
             startPoint=sp, endPoint=ep, boardPoints=bp
-        }
-
-    in newState
+        })
+    ) (splitAt (pos`div`8) board) (splitAt (pos`mod`8) (board!!(pos`div`8)))
 
 -- update black king position
 setBlackKingPos :: GameState -> Int -> GameState
@@ -265,19 +253,15 @@ setBoardPointColorAt (GameState {
     inProgress=ip, whiteKing=wk,  moveEnabled=me,
     blackKing=bk , startPointIsSet=spis,
     startPoint=sp, endPoint=ep, boardPoints=bp }) index newColor =
-    let
-
-        (l1, (coords,_,p):l2) = splitAt index bp
-
-        newState = GameState { 
+    (\(l1, (coords,_,p):l2) -> 
+        (GameState { 
             board=board , 
             turn=t,  wasCheck=wc,  moveEnabled=me,
             whoWasInCheck=wwic, inProgress=ip,
             whiteKing=wk, blackKing=bk , startPointIsSet=spis,
             startPoint=sp, endPoint=ep, boardPoints=(l1 ++ [(coords,newColor,p)] ++ l2)
-        }
-
-    in newState
+        })
+    ) $ splitAt index bp
 
 -- set 'boardPoints' at given index
 setBoardPieceAt :: GameState -> Int -> (Int,GLfloat) -> GameState
@@ -287,19 +271,15 @@ setBoardPieceAt (GameState {
     inProgress=ip, whiteKing=wk,  moveEnabled=me,
     blackKing=bk , startPointIsSet=spis,
     startPoint=sp, endPoint=ep, boardPoints=bp }) index newPiece =
-    let
-
-        (l1, (coords,col,_):l2) = splitAt index bp
-
-        newState = GameState { 
+    (\(l1, (coords,col,_):l2) -> 
+        (GameState { 
             board=board , 
             turn=t,  wasCheck=wc,  moveEnabled=me,
             whoWasInCheck=wwic, inProgress=ip,
             whiteKing=wk, blackKing=bk , startPointIsSet=spis,
             startPoint=sp, endPoint=ep, boardPoints=(l1 ++ [(coords,col,newPiece)] ++ l2)
-        }
-
-    in newState
+        })
+    ) $ splitAt index bp
 
 -- enable the moves
 enableMove :: GameState -> GameState

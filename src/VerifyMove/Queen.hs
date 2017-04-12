@@ -7,4 +7,5 @@ import VerifyMove.Bishop as Bishop
 
 verifyMove :: GameState -> Int -> Int -> Bool
 verifyMove state startCell endCell = 
-    (startCell /= endCell) && ((Rook.verifyMove state startCell endCell) || (Bishop.verifyMove state startCell endCell))
+    (startCell /= endCell) 
+    && ((Rook.verifyMove state startCell endCell) || (Bishop.verifyMove state startCell endCell))

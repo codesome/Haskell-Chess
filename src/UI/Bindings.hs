@@ -59,23 +59,6 @@ resetColor gameState index
 resetToState :: GameState -> GameState -> GameState
 resetToState previous _ = previous
 
--- leftButtonHandler :: GLint -> GLint -> GameState -> GameState
--- leftButtonHandler x y gameState = do
---     let index = getIndex x y
---     if (isStartPointSet gameState)
---         then do
---             let previousStart = getStartPoint gameState
---             if previousStart==index
---                 then do
---                     (setStartPointIsSet (resetColor gameState index) False)
---                 else do
---                     let intermediate = (resetColor gameState (getStartPoint gameState))
---                     let intermediate2 = (colorThisAsFirst intermediate index)
---                     (setStartPoint intermediate2 index)
---         else do
---             let intermediate = (colorThisAsFirst gameState index)
---             (setStartPointIsSet (setStartPoint intermediate index) True)
-
 leftButtonHandler :: GLint -> GLint -> GameState -> GameState
 leftButtonHandler x y gameState
     | (not (isStartPointSet gameState)) = 
@@ -106,24 +89,6 @@ leftButtonHandler x y gameState
         index = getIndex x y
         previousStart = getStartPoint gameState
 
--- rightButtonHandlerUtil :: GLint -> GLint -> GameState -> GameState
--- rightButtonHandlerUtil x y gameState = do
---     let index = getIndex x y
---     if (isStartPointSet gameState)
---         then do
---             let startPoint = getStartPoint gameState
---             if (verifyMove gameState startPoint index)
---                 then do
---                     let intermediate = (disableMove gameState)
---                     let intermediate1 = (moveFromTo intermediate startPoint index)
---                     let intermediate2 = (resetColor intermediate1 startPoint)
---                     (setStartPointIsSet (resetColor intermediate2 index) False)
---                 else 
---                     gameState
-
---         else do
---             gameState
-
 rightButtonHandlerUtil :: GLint -> GLint -> GameState -> GameState
 rightButtonHandlerUtil x y gameState
     | (isStartPointSet gameState) && (verifyMove gameState startPoint index) = 
@@ -147,49 +112,52 @@ rightButtonHandlerUtil x y gameState
         startPoint = getStartPoint gameState
 
 rightButtonHandler :: GLint -> GLint -> IORef GameState -> Socket -> IORef (String -> IO ()) -> IO ()
-rightButtonHandler x y gameState sock s = do
-    gstate <- get gameState
-    if (getMoveEnabled gstate) 
-        then do
-            let startPoint = getStartPoint gstate
-            gameState $~! (rightButtonHandlerUtil x y)
-
-            gstate2 <- get gameState
-
-            if not (getMoveEnabled gstate2)
-                then do
-                    let pcolor = getSquareColor (getSquareAt gstate startPoint)
-                    if (checkForGameCheck gstate2 (getKingPos gstate2 pcolor) pcolor)
-                        then do
-                            gameState $~! (resetToState gstate)
-                            addMessage "Watch out! You will get into check."
-                        else do
-                            sender <- get s
-                            sender ((show (63-startPoint))++":"++(show $ (63-(getIndex x y))))
-                            forkIO $ opponentMoveHandler gameState sock
-                            updateConsole False False
-                else 
-                    addMessage "That move is invalid"
-
+rightButtonHandler x y gameState sock s = (get gameState) >>= (\gstate ->
+    if (getMoveEnabled gstate)
+        then (\startPoint ->
+            (gameState $~! (rightButtonHandlerUtil x y)) >>= 
+                (\_ -> 
+                (get gameState) >>= (\gstate2 -> 
+                        if not (getMoveEnabled gstate2)
+                            then (\pcolor ->
+                                if (checkForGameCheck gstate2 (getKingPos gstate2 pcolor) pcolor)
+                                    then 
+                                        (gameState $~! (resetToState gstate)) >>=
+                                            (\_ -> addMessage "Watch out! You will get into check.")
+                                    else do
+                                        (get s) >>= (\sender -> 
+                                                sender ((show (63-startPoint))++":"++(show $ (63-(getIndex x y))))
+                                            )
+                                        forkIO $ opponentMoveHandler gameState sock
+                                        updateConsole False False
+                                ) $ getSquareColor (getSquareAt gstate startPoint)
+                            else 
+                                addMessage "That move is invalid"
+                    )
+                )
+            ) $ getStartPoint gstate
         else 
             putStr ""
+    )
 
 opponentMove :: Int -> Int -> GameState -> GameState
 opponentMove from to gameState =  enableMove $ moveFromTo gameState from to
 
 opponentMoveHandlerUtil :: IORef GameState -> String -> IO ()
 opponentMoveHandlerUtil gameState move =
-    let 
-        l = splitOn ":" move
-        from = read (l!!0) :: Int
-        to = read (l!!1) :: Int
-    in do 
-        gameState $~! (opponentMove from to)
-        gstate <- get gameState
-        let pcolor = if (getTurn gstate)==PlayerW then White else Black
-        if (checkForGameCheck gstate (getKingPos gstate pcolor) pcolor)
-            then updateConsole True True
-            else updateConsole True False
+    (\(from,to) ->
+        (gameState $~! (opponentMove from to)) >>=
+            (\_ ->
+                (get gameState) >>= 
+                    (\gstate ->
+                        (\pcolor ->
+                            if (checkForGameCheck gstate (getKingPos gstate pcolor) pcolor)
+                                then updateConsole True True
+                                else updateConsole True False
+                        ) $ if (getTurn gstate)==PlayerW then White else Black
+                    ) 
+            )
+    ) $ (\l -> (read (l!!0) :: Int, read (l!!1) :: Int)) $ (splitOn ":" move)
 
 opponentMoveHandler :: IORef GameState -> Socket -> IO ()
 opponentMoveHandler gameState sock = handleMessage sock $ opponentMoveHandlerUtil gameState

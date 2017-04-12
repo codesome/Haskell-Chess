@@ -38,24 +38,16 @@ verifyMove state start end
 
 -- Move a piece in 'boardPoints'
 changePieceFromTo :: GameState -> Int -> Int -> GameState
-changePieceFromTo state from to =
-    let
-        p = getBoardPieceAt state from
-        newState = setBoardPieceAt (setBoardPieceAt state from emptyBoardPiece) to p
-    in newState
+changePieceFromTo state from to = (\p -> 
+            (setBoardPieceAt (setBoardPieceAt state from emptyBoardPiece) to p)
+        ) $ getBoardPieceAt state from
 
 -- Move a piece in 'board'
 moveFromTo :: GameState -> Int -> Int -> GameState
-moveFromTo state from to =
-    let
-       startSquare = getSquareAt state from
-       intermediateState = setSquareAt state from (Empty)
-
-       -- making 'to' as that as 'from' and updating king position
-       newState = if (startSquare==wKing)
-                        then setWhiteKingPos (setSquareAt intermediateState to startSquare) to
-                        else if (startSquare==bKing)
-                            then setBlackKingPos (setSquareAt intermediateState to startSquare) to
-                            else setSquareAt intermediateState to startSquare
-
-    in (changePieceFromTo newState from to)
+moveFromTo state from to = (\startSquare intermediateState -> 
+        if (startSquare==wKing)
+            then setWhiteKingPos (setSquareAt intermediateState to startSquare) to
+            else if (startSquare==bKing)
+                then setBlackKingPos (setSquareAt intermediateState to startSquare) to
+                else setSquareAt intermediateState to startSquare
+    ) (getSquareAt state from) (setSquareAt state from (Empty))
