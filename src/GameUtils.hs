@@ -12,11 +12,11 @@ gameUtilsBoard = [
         [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
         [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
         [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
+        [Empty,   Empty,   Empty,   Empty,   bKnight,   Empty,   Empty,   Empty],
         [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
+        [Empty,   Empty,   Empty,   wKing,   Empty,   Empty,   Empty,   Empty],
         [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
-        [Empty,   Empty,   Empty,   Empty,   wKing,   Empty,   Empty,   Empty],
-        [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
-        [Empty,   Empty,   Empty,   Empty,   Empty,   bKnight,   Empty,   Empty]
+        [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty]
     ]
 
 checkGameState :: GameState
@@ -42,15 +42,16 @@ colorCompliment color1 = color2 where
 
 checkForGameCheck :: GameState -> Int -> PColor -> Bool
 checkForGameCheck state kingCell color =
-  if ((checkLeftColCheck state (kingCell) (colorCompliment color))||(checkRightColCheck state (kingCell) (colorCompliment color))
-       || (checkDownRowCheck state (kingCell) (colorCompliment color))|| (checkUpRowCheck state (kingCell) (colorCompliment color))
-       || (checkUpperLeftDiagonal state (kingCell) (colorCompliment color)) || (checkLowerLeftDiagonal state (kingCell) (colorCompliment color))
-       || (checkLowerRightDiagonal state (kingCell) (colorCompliment color)) || (checkUpperRightDiagonal state (kingCell) (colorCompliment color))
-       || (checkUMidLeftHorseCheck state kingCell (colorCompliment color)) || (checkLMidLeftHorseCheck state kingCell (colorCompliment color))
-       || (checkUpperLeftHorseCheck state kingCell (colorCompliment color)) || (checkLowerLeftHorseCheck state kingCell (colorCompliment color))
-       || (checkUMidLeftHorseCheck state kingCell (colorCompliment color))|| (checkUpperRightHorseCheck state kingCell (colorCompliment color))
-       || (checkLowerRightHorseCheck state kingCell (colorCompliment color)) || (checkUMidRightHorseCheck state kingCell (colorCompliment color))
-       || (checkLMidRightHorseCheck state kingCell (colorCompliment color))
+  let complimentColor = colorCompliment color in
+  if ((checkLeftColCheck state (kingCell) complimentColor)||(checkRightColCheck state (kingCell) complimentColor)
+       || (checkDownRowCheck state (kingCell) complimentColor)|| (checkUpRowCheck state (kingCell) complimentColor)
+       || (checkUpperLeftDiagonal state (kingCell) complimentColor) || (checkLowerLeftDiagonal state (kingCell) complimentColor)
+       || (checkLowerRightDiagonal state (kingCell) complimentColor) || (checkUpperRightDiagonal state (kingCell) complimentColor)
+       || (checkUMidLeftHorseCheck state kingCell complimentColor) || (checkLMidLeftHorseCheck state kingCell complimentColor)
+       || (checkUpperLeftHorseCheck state kingCell complimentColor) || (checkLowerLeftHorseCheck state kingCell complimentColor)
+       || (checkUMidLeftHorseCheck state kingCell complimentColor)|| (checkUpperRightHorseCheck state kingCell complimentColor)
+       || (checkLowerRightHorseCheck state kingCell complimentColor) || (checkUMidRightHorseCheck state kingCell complimentColor)
+       || (checkLMidRightHorseCheck state kingCell complimentColor)
     )
       then True
   else False
@@ -112,7 +113,7 @@ checkUpRowCheck ::  GameState -> Int -> PColor -> Bool
 checkUpRowCheck state cell color
     |  getSquareType(getSquareAt state cell) == King && getSquareColor(getSquareAt state cell) == colorCompliment color =
         if cell `div` 8 == 0 then False
-        else checkDownRowCheck state (cell-8) color
+        else checkUpRowCheck state (cell-8) color
     | ((cell `div` 8) < 8) =
         if getSquareColor (getSquareAt state cell) == colorCompliment color then False
         else if getSquareColor (getSquareAt state cell) == NoColor then
@@ -235,6 +236,6 @@ checkLMidRightHorseCheck state cell color
 checkLowerRightHorseCheck :: GameState -> Int -> PColor -> Bool
 checkLowerRightHorseCheck state cell color
     | ((cell+16) `div` 8 <=7 && ((cell `mod` 8)+1) <=7) =
-            if getSquareColor (getSquareAt state (cell+17)) == color && (getSquareType (getSquareAt state (cell+7))) == Knight then True
+            if getSquareColor (getSquareAt state (cell+17)) == color && (getSquareType (getSquareAt state (cell+17))) == Knight then True
             else False
      | otherwise = False
