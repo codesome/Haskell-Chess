@@ -31,7 +31,7 @@ main =
             
             sock <- listenOn $ PortNumber (toEnum myport::PortNumber)
 
-            putStrLn "Starting server ..."
+            putStrLn $ "Starting server at port " ++ (show myport) ++ " ..."
             putStr "Press [Enter] when other player is ready"
             hFlush stdout
             _ <- getLine

@@ -23,17 +23,17 @@ drawPiece (p, c) = do
 
 invertColor :: GLfloat -> GLfloat
 invertColor c
-    | c==0.05 = 0.95
+    | c==0.05   = 0.95
     | otherwise = 0.05
 
 drawPieceFigure :: Int -> GLfloat -> IO ()
 drawPieceFigure p c
-    | p==1 = drawBishop c
-    | p==2 = do drawKing; color $ invertedColor ; drawKingLoop;
-    | p==3 = drawKnight c
-    | p==4 = drawPawn c
-    | p==5 = do drawQueen; color $ invertedColor ; drawQueenLoop;
-    | p==6 = do drawRook; color $ invertedColor ; drawRookLoop;
+    | p==1      = drawBishop c
+    | p==2      = do drawKing; color $ invertedColor ; drawKingLoop;
+    | p==3      = drawKnight c
+    | p==4      = drawPawn c
+    | p==5      = do drawQueen; color $ invertedColor ; drawQueenLoop;
+    | p==6      = do drawRook; color $ invertedColor ; drawRookLoop;
     | otherwise = putStr ""
     where
         inverted = invertColor c

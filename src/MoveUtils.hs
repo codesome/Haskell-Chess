@@ -30,7 +30,7 @@ verifyMove state start end
         ptype     = getSquareType square
         pcolor    = getSquareColor square
         turn      = getTurn state
-        validMove =  (start>=0 && start<=63 && end>=0 && end<=63) -- index in range
+        validMove = (start>=0 && start<=63 && end>=0 && end<=63) -- index in range
             && ( -- moved own piece
                 ((turn==PlayerW) && (pcolor==White))
                 || ((turn==PlayerB) && (pcolor==Black))

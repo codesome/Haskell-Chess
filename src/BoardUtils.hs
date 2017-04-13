@@ -23,7 +23,7 @@ getPTypeStr pt = case pt of
     Pawn      -> "Pawn"
     Queen     -> "Queen"
     Rook      -> "Rook"
-    otherwise -> ""
+    otherwise -> "NoType"
 
 {-/ Square utils -}
 
