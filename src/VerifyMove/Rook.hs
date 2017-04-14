@@ -6,13 +6,13 @@ import BoardUtils
 verifyMove :: GameState -> Int -> Int -> Bool
 verifyMove state startCell endCell
     | (startCell == endCell) = False
-    | (colStart == colEnd) = ((startCell > endCell) -- moving above
+    | (colStart == colEnd) = ((startCell > endCell)          -- moving above
                                 && ((foldr (&&) True  (map (isEmpty state) [(startCell-8),(startCell-16)..(endCell+8)]))))
                              || ((not (startCell > endCell)) -- moving below
                                 && (foldr (&&) True  (map (isEmpty state) [(startCell+8),(startCell+16)..(endCell-8)])))
-    | (rowStart == rowEnd) = ((startCell > endCell) -- moving left
+    | (rowStart == rowEnd) = ((startCell > endCell)          -- moving left
                     && (foldr (&&) True  (map (isEmpty state) [(startCell-1),(startCell-2)..(endCell+1)])))
-                  || ((not (startCell > endCell)) -- moving right
+                  || ((not (startCell > endCell))            -- moving right
                     && (foldr (&&) True  (map (isEmpty state) [(startCell+1),(startCell+2)..(endCell-1)])))
     | otherwise = False
     where

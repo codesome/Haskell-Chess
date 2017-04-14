@@ -1,9 +1,10 @@
-module UI.Display (display,drawSquare) where
+module UI.Display (display) where
  
 import Graphics.UI.GLUT
 import Control.Monad
-import UI.Figures
 import Data.IORef
+
+import UI.Figures
 import Types
 import BoardUtils
 

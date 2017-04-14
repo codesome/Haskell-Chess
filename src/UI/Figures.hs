@@ -1,4 +1,4 @@
-module UI.Figures where
+module UI.Figures (drawCube, drawPiece) where
  
 import Graphics.UI.GLUT
 import Control.Monad

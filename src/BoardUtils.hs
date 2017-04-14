@@ -1,7 +1,8 @@
 module BoardUtils where
 
-import Types
 import Graphics.UI.GLUT (GLfloat)
+
+import Types
 
 {- Square utils -}
 

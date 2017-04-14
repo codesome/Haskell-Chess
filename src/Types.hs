@@ -2,7 +2,6 @@ module Types where
 
 import Graphics.UI.GLUT (GLfloat)
 
-
 -- Board used in game
 type Board       = [[Square]]
 

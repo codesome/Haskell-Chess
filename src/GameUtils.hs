@@ -9,14 +9,14 @@ import Data.List
 
 gameUtilsBoard :: Board
 gameUtilsBoard = [
+        [Empty,   Empty,   wQueen,   Empty,   Empty,   Empty,   Empty,   Empty],
+        [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
+        [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   bRook],
+        [Empty,   Empty,   Empty,   Empty,   wKing,   Empty,   Empty,   Empty],
+        [bRook,   Empty,   Empty,   Empty,   Empty,   Empty,   bKnight,   Empty],
         [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
         [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
-        [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
-        [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
-        [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
-        [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
-        [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
-        [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty]
+        [Empty,   Empty,   Empty,   bRook,   Empty,   bRook,   Empty,   Empty]
     ]
 
 checkGameState :: GameState
@@ -55,15 +55,30 @@ checkForGameCheck :: GameState -> PColor -> Bool -> Int -> Bool
 checkForGameCheck state color firstIteration kingCell =
   let (l1,l2) = getCheckPositions state (colorCompliment color) firstIteration kingCell in
   let checkList = filter(\x -> x>= 0) (l1++l2) in
-  if length(checkList) > 0 then True
-  else False
+  (length(checkList) > 0)
+
+checkMate :: GameState -> PColor -> Int -> Bool
+checkMate state color kingCell
+    | (canKingMove state color kingCell) = False
+    | otherwise = not $ canAttackCheckPiece state color kingCell (l1,l2) l
+    where
+        (l1,l2) = getCheckPositions state (colorCompliment color) False kingCell
+        l = filter(\x -> x>= 0) (l1++l2)
 
 canKingMove :: GameState -> PColor -> Int -> Bool
 canKingMove state color cell =
   let r = cell `div` 8 in
   let c = cell `mod` 8 in
-  let l = map getCellIndex [(rr,cc) | rr <- [r-1,r+1], cc <- [c-1,c+1], rr>=0 , cc>=0, rr<=7, cc<=7] in
+  let l = map getCellIndex [(rr,cc) | rr <- [r-1,r,r+1], cc <- [c-1,c,c+1], rr>=0 , cc>=0, rr<=7, cc<=7, (rr,cc)/=(r,c)] in
   not (foldr (&&) True (map (checkForGameCheck state color False) l))
+
+dummy :: GameState -> PColor -> Int -> IO ()
+dummy state color cell = do
+  let r = cell `div` 8
+  let c = cell `mod` 8
+  let l = [(rr,cc) | rr <- [r-1,r,r+1], cc <- [c-1,c,c+1], rr>=0 , cc>=0, rr<=7, cc<=7, (rr,cc)/=(r,c)]
+  print l
+  print $ map getCellIndex l
 
 canAttackCheckPiece :: GameState -> PColor -> Int -> ([Int],[Int]) -> [Int] -> Bool
 canAttackCheckPiece state color cell (list1,list2) checkList
@@ -79,7 +94,7 @@ canBlockCheckPiece ::  GameState -> PColor -> Int -> ([Int],[Int]) -> [Int] -> B
 canBlockCheckPiece state color cell (list1,list2) checkList =
   let index = elemIndex ((checkList !! 0)) list1 in
   let r = cell `div` 8 in
-  let c = cell `div` 8 in
+  let c = cell `mod` 8 in
     if      (index == Just 0)  then checkLeftColHit           state color r ((checkList!!0) `mod` 8) c
     else if (index == Just 1)  then checkRightColHit          state color r ((checkList!!0) `mod` 8) c
     else if (index == Just 2)  then checkDownRowHit           state color r ((checkList!!0) `div` 8) c
@@ -93,50 +108,50 @@ canBlockCheckPiece state color cell (list1,list2) checkList =
 checkRightColHit :: GameState -> PColor -> Int -> Int -> Int -> Bool
 checkRightColHit state color startRow endCol startCol =
   let l = map getCellIndex [(rr,cc) | rr <- [startRow], cc <- [(startCol+1),(startCol+2)..endCol]] in
-    not (foldr (||) False (map (checkForGameCheck state color False) l))
+    foldr (||) False (map (checkForGameCheck state color False) l)
 
 checkLeftColHit :: GameState -> PColor -> Int -> Int -> Int -> Bool
 checkLeftColHit state color startRow endCol startCol =
   let l = map getCellIndex [(rr,cc) | rr <- [startRow], cc <- [startCol-1,startCol-2..endCol]] in
-    not (foldr (||) False (map (checkForGameCheck state color False) l))
+    foldr (||) False (map (checkForGameCheck state color False) l)
 
 checkUpRowHit :: GameState -> PColor -> Int -> Int -> Int -> Bool
 checkUpRowHit state color startRow endRow startCol =
   let l = map getCellIndex [(rr,cc) | rr <- [startRow-1,startRow-2..endRow], cc <- [startCol]] in
-    not (foldr (||) False (map (checkForGameCheck state color False) l))
+    foldr (||) False (map (checkForGameCheck state color False) l)
 
 checkDownRowHit :: GameState -> PColor -> Int -> Int -> Int -> Bool
 checkDownRowHit state color startRow endRow startCol =
   let l = map getCellIndex [(rr,cc) | rr <- [startRow+1,startRow+2..endRow], cc <- [startCol]] in
-    not (foldr (||) False (map (checkForGameCheck state color False) l))
+    foldr (||) False (map (checkForGameCheck state color False) l)
 
 checkUpperLeftDiagHit :: GameState -> PColor -> Int -> Int -> Int -> Bool
 checkUpperLeftDiagHit state color startRow endCell startCol =
   let endRow = endCell `div` 8 in
   let endCol = endCell `mod` 8 in
   let l = map getCellIndex [(rr,cc) | rr <- [startRow-1,startRow-2..endRow], cc <- [startCol-1,startCol-2..endCol], abs(rr-startRow) == abs(cc-startCol)] in
-    not (foldr (||) False (map (checkForGameCheck state color False) l))
+    foldr (||) False (map (checkForGameCheck state color False) l)
 
 checkLowerLeftDiagHit :: GameState -> PColor -> Int -> Int -> Int -> Bool
 checkLowerLeftDiagHit state color startRow endCell startCol =
   let endRow = endCell `div` 8 in
   let endCol = endCell `mod` 8 in
   let l = map getCellIndex [(rr,cc) | rr <- [startRow+1,startRow+2..endRow], cc <- [startCol-1,startCol-2..endCol], abs(rr-startRow) == abs(cc-startCol)] in
-    not (foldr (||) False (map (checkForGameCheck state color False) l))
+    foldr (||) False (map (checkForGameCheck state color False) l)
 
 checkUpperRightDiagHit :: GameState -> PColor -> Int -> Int -> Int -> Bool
 checkUpperRightDiagHit state color startRow endCell startCol =
   let endRow = endCell `div` 8 in
   let endCol = endCell `mod` 8 in
   let l = map getCellIndex [(rr,cc) | rr <- [startRow-1,startRow-2..endRow], cc <- [startCol+1,startCol+2..endCol], abs(rr-startRow) == abs(cc-startCol)] in
-    not (foldr (||) False (map (checkForGameCheck state color False) l))
+    foldr (||) False (map (checkForGameCheck state color False) l)
 
 checkLowerRightDiagHit :: GameState -> PColor -> Int -> Int -> Int -> Bool
 checkLowerRightDiagHit state color startRow endCell startCol =
   let endRow = endCell `div` 8 in
   let endCol = endCell `mod` 8 in
   let l = map getCellIndex [(rr,cc) | rr <- [startRow+1,startRow+2..endRow], cc <- [startCol+1,startCol+2..endCol], abs(rr-startRow) == abs(cc-startCol)] in
-    not (foldr (||) False (map (checkForGameCheck state color False) l))
+    foldr (||) False (map (checkForGameCheck state color False) l)
 
 getCellIndex :: (Int,Int) -> Int
 getCellIndex (x,y) = x*8 + y
