@@ -19,6 +19,7 @@ data PType       = Bishop | King | Knight | Pawn | Queen | Rook | NoType derivin
 data Player      = PlayerW | PlayerB deriving (Show,Eq)
 
 -- Display point on the board
+                -- ((   x   ,   y   ,   z   ),(    r  ,   g   ,   b   ),( piece_id, color))
 type BoardSquare = ((GLfloat,GLfloat,GLfloat),(GLfloat,GLfloat,GLfloat),(Int,GLfloat))
 
 emptyBoardPiece :: (Int,GLfloat)
@@ -44,13 +45,9 @@ data GameState = GameState {
     board           :: Board, -- 2D list of Square
     boardPoints     :: [BoardSquare], -- display points
     turn            :: Player, -- PlayerW/PlayerB
-    -- wasCheck        :: Bool, -- True if it was a check before this move
-    -- whoWasInCheck   :: Maybe Player, -- Either PlayerW/PlayerB on check or Nothing
-    -- inProgress      :: Bool, -- True if the game is still on
     whiteKing       :: Int, -- white king position
     blackKing       :: Int, -- black king position
     startPointIsSet :: Bool, -- True if left click is registered
     startPoint      :: Int, -- index of start square selected
-    -- endPoint        :: Int, -- index of end square selected
     moveEnabled     :: Bool -- True if the user can move
 } deriving (Show)

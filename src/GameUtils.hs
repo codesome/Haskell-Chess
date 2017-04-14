@@ -31,10 +31,10 @@ checkGameState = GameState {
 }
 
 colorCompliment :: PColor -> PColor
-colorCompliment color1 = color2 where
-  color2
-      | color1 == White = Black
-      | color1 == Black = White
+colorCompliment color 
+      | color == White = Black
+      | color == Black = White
+      | otherwise = NoColor
 
 getCheckPositions :: GameState -> PColor ->Bool -> Int -> ([Int],[Int])
 getCheckPositions state complimentColor firstIteration kingCell = (
