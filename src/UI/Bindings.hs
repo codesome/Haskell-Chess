@@ -199,10 +199,7 @@ opponentMoveHandler gameState sock = handleMessage sock $ opponentMoveHandlerUti
 
 -- to handle mouse and keyboard interrupts
 keyboardMouse :: IORef GameState -> Socket -> IORef (String -> IO ()) -> KeyboardMouseCallback
-keyboardMouse gameState sock sender _key Down _ (Position x y) = 
-    case _key of
-        (MouseButton LeftButton)  -> gameState $~! (leftButtonHandler x y)
-        (MouseButton RightButton) -> (rightButtonHandler x y gameState sock sender)
-        (Char 'q')                -> exitWith ExitSuccess -- quit on 'q'
-        otherwise                 -> return ()
+keyboardMouse gameState sock sender (MouseButton LeftButton)  Down _ (Position x y) = (rightButtonHandler x y gameState sock sender)
+keyboardMouse gameState _    _      (MouseButton RightButton) Down _ (Position x y) = gameState $~! (leftButtonHandler x y) 
+keyboardMouse _         _    _      (Char 'q')                Down _ _              = exitWith ExitSuccess
 keyboardMouse _ _ _ _ _ _ _ = return ()

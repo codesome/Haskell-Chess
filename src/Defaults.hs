@@ -76,14 +76,10 @@ initialGameStateW :: GameState
 initialGameStateW = GameState {
     board = initialGameBoardW,
     turn            = PlayerW,
-    wasCheck        = False,
-    whoWasInCheck   = Nothing,
-    inProgress      = True,
     whiteKing       = 60,
     blackKing       = 4,
     startPointIsSet = False,
     startPoint      = 0, 
-    endPoint        = 0,
     boardPoints     = initialDisplayPointsW, 
     moveEnabled     = True
 }
@@ -93,14 +89,10 @@ initialGameStateB :: GameState
 initialGameStateB = GameState {
     board           = initialGameBoardB,
     turn            = PlayerB,
-    wasCheck        = False,
-    whoWasInCheck   = Nothing,
-    inProgress      = True,
     whiteKing       = 3,
     blackKing       = 59,
     startPointIsSet = False,
     startPoint      = 0, 
-    endPoint        = 0,
     boardPoints     = initialDisplayPointsB, 
     moveEnabled     = True
 }

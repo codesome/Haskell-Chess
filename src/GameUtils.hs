@@ -23,14 +23,10 @@ checkGameState :: GameState
 checkGameState = GameState {
         board = gameUtilsBoard,
         turn = PlayerW,
-        wasCheck = False,
-        whoWasInCheck = Nothing,
-        inProgress = True,
         whiteKing=36,
         blackKing=4,
         startPointIsSet=False,
         startPoint=0,
-        endPoint=0,
         boardPoints=initialDisplayPointsW, moveEnabled=True
 }
 
