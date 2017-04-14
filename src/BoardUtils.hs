@@ -148,6 +148,12 @@ getSquareAt state index = (\board row col ->
         ((board !! row) !! col)
     ) (getBoard state) (index `div` 8) (index `mod` 8)
 
+-- get square from 'board' at given index (0-63)
+getSquareColorAt :: GameState -> Int -> PColor
+getSquareColorAt state index = (\board row col ->
+        getSquareColor ((board !! row) !! col)
+    ) (getBoard state) (index `div` 8) (index `mod` 8)
+
 -- get display point from 'boardPoints' at given index (0-63)
 getBoardPieceAt :: GameState -> Int -> (Int,GLfloat)
 getBoardPieceAt state index = (\(_,_,p) -> p) ((getBoardPoints state) !! index)

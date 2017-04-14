@@ -41,15 +41,46 @@ colorCompliment color1 = color2 where
       | color1 == Black = White
 
 getCheckPositions :: GameState -> PColor ->Bool -> Int -> ([Int],[Int])
-getCheckPositions state complimentColor firstIteration kingCell = ([(checkLeftColCheck state complimentColor firstIteration kingCell),(checkRightColCheck state complimentColor firstIteration kingCell)
-     , (checkDownRowCheck state complimentColor firstIteration kingCell), (checkUpRowCheck state complimentColor firstIteration kingCell)
-     , (checkUpperLeftDiagonal state complimentColor firstIteration kingCell) , (checkLowerLeftDiagonal state complimentColor firstIteration kingCell)
-     , (checkUpperRightDiagonal state complimentColor firstIteration kingCell) ,(checkLowerRightDiagonal  state complimentColor firstIteration kingCell)],
-     [ (checkUMidLeftHorseCheck state complimentColor  kingCell) , (checkLMidLeftHorseCheck state complimentColor  kingCell)
-     , (checkUpperLeftHorseCheck state complimentColor  kingCell) , (checkLowerLeftHorseCheck state complimentColor  kingCell)
-     , (checkUMidLeftHorseCheck state complimentColor  kingCell), (checkUpperRightHorseCheck state complimentColor  kingCell)
-     , (checkLowerRightHorseCheck state complimentColor  kingCell) , (checkUMidRightHorseCheck state complimentColor  kingCell)
-     , (checkLMidRightHorseCheck state complimentColor  kingCell)])
+getCheckPositions state complimentColor firstIteration kingCell = (
+        -- all non horse
+         map (\x -> x state complimentColor firstIteration kingCell) 
+            [ (checkLeftColCheck),
+              (checkRightColCheck), 
+              (checkDownRowCheck), 
+              (checkUpRowCheck), 
+              (checkUpperLeftDiagonal), 
+              (checkLowerLeftDiagonal), 
+              (checkUpperRightDiagonal) ,
+              (checkLowerRightDiagonal)
+            ],
+        -- all 8 horse
+        map (\x -> x state complimentColor  kingCell)
+            [ (checkUMidLeftHorseCheck), 
+              (checkLMidLeftHorseCheck), 
+              (checkUpperLeftHorseCheck), 
+              (checkLowerLeftHorseCheck), 
+              (checkUpperRightHorseCheck), 
+              (checkLowerRightHorseCheck), 
+              (checkUMidRightHorseCheck), 
+              (checkLMidRightHorseCheck)
+            ]
+     )
+
+getGameStatus :: GameState -> PColor -> (Bool,Bool)
+getGameStatus state color = 
+    (\kingCell -> 
+        (\(l1,l2) -> 
+            (\checkList ->
+                (
+                    length(checkList) > 0,
+                    (not (canKingMove state color kingCell)) && (not $ canAttackCheckPiece state color kingCell (l1,l2) checkList)
+                )
+            ) $ filter (\x -> x>= 0) (l1++l2)
+        ) $ getCheckPositions state (colorCompliment color) False kingCell
+    ) $ getKingPos state color
+
+isInCheck :: GameState -> PColor -> Bool
+isInCheck state color = checkForGameCheck state color False (getKingPos state color)
 
 checkForGameCheck :: GameState -> PColor -> Bool -> Int -> Bool
 checkForGameCheck state color firstIteration kingCell =
@@ -69,7 +100,7 @@ canKingMove :: GameState -> PColor -> Int -> Bool
 canKingMove state color cell =
   let r = cell `div` 8 in
   let c = cell `mod` 8 in
-  let l = map getCellIndex [(rr,cc) | rr <- [r-1,r,r+1], cc <- [c-1,c,c+1], rr>=0 , cc>=0, rr<=7, cc<=7, (rr,cc)/=(r,c)] in
+  let l = filter (\x -> (getSquareColorAt state x) /= color) $ map getCellIndex [(rr,cc) | rr <- [r-1,r,r+1], cc <- [c-1,c,c+1], rr>=0 , cc>=0, rr<=7, cc<=7, (rr,cc)/=(r,c)] in
   not (foldr (&&) True (map (checkForGameCheck state color False) l))
 
 dummy :: GameState -> PColor -> Int -> IO ()
@@ -91,18 +122,20 @@ canKillHorse ::  GameState -> PColor -> Int -> Bool
 canKillHorse state color cell = checkForGameCheck state color True cell
 
 canBlockCheckPiece ::  GameState -> PColor -> Int -> ([Int],[Int]) -> [Int] -> Bool
-canBlockCheckPiece state color cell (list1,list2) checkList =
-  let index = elemIndex ((checkList !! 0)) list1 in
-  let r = cell `div` 8 in
-  let c = cell `mod` 8 in
-    if      (index == Just 0)  then checkLeftColHit           state color r ((checkList!!0) `mod` 8) c
-    else if (index == Just 1)  then checkRightColHit          state color r ((checkList!!0) `mod` 8) c
-    else if (index == Just 2)  then checkDownRowHit           state color r ((checkList!!0) `div` 8) c
-    else if (index == Just 3)  then checkUpRowHit             state color r ((checkList!!0) `div` 8) c
-    else if (index == Just 4)  then checkUpperLeftDiagHit     state color r ((checkList!!0)        ) c
-    else if (index == Just 5)  then checkLowerLeftDiagHit     state color r ((checkList!!0)        ) c
-    else if (index == Just 6)  then checkUpperRightDiagHit    state color r ((checkList!!0)        ) c
-    else                       checkLowerRightDiagHit         state color r ((checkList!!0)        ) c
+canBlockCheckPiece state color cell (list1,list2) checkList
+    | (index == Just 0)  = checkLeftColHit        state color r (checkListHead `mod` 8) c
+    | (index == Just 1)  = checkRightColHit       state color r (checkListHead `mod` 8) c
+    | (index == Just 2)  = checkDownRowHit        state color r (checkListHead `div` 8) c
+    | (index == Just 3)  = checkUpRowHit          state color r (checkListHead `div` 8) c
+    | (index == Just 4)  = checkUpperLeftDiagHit  state color r (checkListHead        ) c
+    | (index == Just 5)  = checkLowerLeftDiagHit  state color r (checkListHead        ) c
+    | (index == Just 6)  = checkUpperRightDiagHit state color r (checkListHead        ) c
+    | otherwise          = checkLowerRightDiagHit state color r (checkListHead        ) c
+    where
+        checkListHead = checkList!!0
+        index = elemIndex (checkListHead) list1
+        r = cell `div` 8 
+        c = cell `mod` 8
 
 
 checkRightColHit :: GameState -> PColor -> Int -> Int -> Int -> Bool
@@ -127,31 +160,31 @@ checkDownRowHit state color startRow endRow startCol =
 
 checkUpperLeftDiagHit :: GameState -> PColor -> Int -> Int -> Int -> Bool
 checkUpperLeftDiagHit state color startRow endCell startCol =
-  let endRow = endCell `div` 8 in
-  let endCol = endCell `mod` 8 in
-  let l = map getCellIndex [(rr,cc) | rr <- [startRow-1,startRow-2..endRow], cc <- [startCol-1,startCol-2..endCol], abs(rr-startRow) == abs(cc-startCol)] in
-    foldr (||) False (map (checkForGameCheck state color False) l)
+    (\endRow endCol -> 
+      let l = map getCellIndex [(rr,cc) | rr <- [startRow-1,startRow-2..endRow], cc <- [startCol-1,startCol-2..endCol], abs(rr-startRow) == abs(cc-startCol)] in
+        foldr (||) False (map (checkForGameCheck state color False) l)
+    ) (endCell `div` 8) (endCell `mod` 8)
 
 checkLowerLeftDiagHit :: GameState -> PColor -> Int -> Int -> Int -> Bool
 checkLowerLeftDiagHit state color startRow endCell startCol =
-  let endRow = endCell `div` 8 in
-  let endCol = endCell `mod` 8 in
-  let l = map getCellIndex [(rr,cc) | rr <- [startRow+1,startRow+2..endRow], cc <- [startCol-1,startCol-2..endCol], abs(rr-startRow) == abs(cc-startCol)] in
-    foldr (||) False (map (checkForGameCheck state color False) l)
+    (\endRow endCol -> 
+      let l = map getCellIndex [(rr,cc) | rr <- [startRow+1,startRow+2..endRow], cc <- [startCol-1,startCol-2..endCol], abs(rr-startRow) == abs(cc-startCol)] in
+        foldr (||) False (map (checkForGameCheck state color False) l)
+    ) (endCell `div` 8) (endCell `mod` 8)
 
 checkUpperRightDiagHit :: GameState -> PColor -> Int -> Int -> Int -> Bool
 checkUpperRightDiagHit state color startRow endCell startCol =
-  let endRow = endCell `div` 8 in
-  let endCol = endCell `mod` 8 in
-  let l = map getCellIndex [(rr,cc) | rr <- [startRow-1,startRow-2..endRow], cc <- [startCol+1,startCol+2..endCol], abs(rr-startRow) == abs(cc-startCol)] in
-    foldr (||) False (map (checkForGameCheck state color False) l)
+    (\endRow endCol -> 
+      let l = map getCellIndex [(rr,cc) | rr <- [startRow-1,startRow-2..endRow], cc <- [startCol+1,startCol+2..endCol], abs(rr-startRow) == abs(cc-startCol)] in
+        foldr (||) False (map (checkForGameCheck state color False) l)
+    ) (endCell `div` 8) (endCell `mod` 8)
 
 checkLowerRightDiagHit :: GameState -> PColor -> Int -> Int -> Int -> Bool
 checkLowerRightDiagHit state color startRow endCell startCol =
-  let endRow = endCell `div` 8 in
-  let endCol = endCell `mod` 8 in
-  let l = map getCellIndex [(rr,cc) | rr <- [startRow+1,startRow+2..endRow], cc <- [startCol+1,startCol+2..endCol], abs(rr-startRow) == abs(cc-startCol)] in
-    foldr (||) False (map (checkForGameCheck state color False) l)
+    (\endRow endCol -> 
+      let l = map getCellIndex [(rr,cc) | rr <- [startRow+1,startRow+2..endRow], cc <- [startCol+1,startCol+2..endCol], abs(rr-startRow) == abs(cc-startCol)] in
+        foldr (||) False (map (checkForGameCheck state color False) l)
+    ) (endCell `div` 8) (endCell `mod` 8)
 
 getCellIndex :: (Int,Int) -> Int
 getCellIndex (x,y) = x*8 + y

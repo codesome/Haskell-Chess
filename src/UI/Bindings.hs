@@ -137,13 +137,13 @@ rightButtonHandler x y gameState sock s = (get gameState) >>= (\gstate ->
                 (get gameState) >>= (\gstate2 ->  -- new updated game state
                     if not (getMoveEnabled gstate2) -- if move is not enabled (the move was valid and moved)
                         then (\pcolor ->
-                            if (checkForGameCheck gstate2 pcolor False (getKingPos gstate2 pcolor) ) -- checking for self check
+                            if (isInCheck gstate2 pcolor) -- checking for self check
                                 then (gameState $~! (resetToState gstate)) >>= -- resetting to old state, invalid move
                                         (\_ -> addMessage "Watch out! You will get into check.")
                                 else (get s) >>= -- not check, send move to opponent
                                         (\sender -> sender ((show (63-startPoint))++":"++(show $ (63-(getIndex x y)))) ) >>= 
                                         (\_ -> forkIO $ opponentMoveHandler gameState sock ) >>= 
-                                        (\_ -> updateConsole False False )
+                                        (\_ -> updateConsole False False False)
                             ) $ getSquareColor (getSquareAt gstate startPoint)
                         else 
                             addMessage "That move is invalid"
@@ -175,11 +175,9 @@ opponentMoveHandlerUtil gameState move =
             (gameState $~! (opponentMove from to)) >>= (\_ -> -- register the move
                 (get gameState) >>= (\gstate -> -- checking updated state for a check
                     (\pcolor -> 
-                        (\kingPos ->
-                            if (checkForGameCheck gstate pcolor False kingPos)
-                                then updateConsole True True  -- its a check
-                                else updateConsole True False -- not a check
-                        ) $ getKingPos gstate pcolor
+                        (\(check,mate) -> 
+                                updateConsole True check mate
+                        ) $ getGameStatus gstate pcolor
                     ) $ if (getTurn gstate)==PlayerW then White else Black
                 ) 
             )
