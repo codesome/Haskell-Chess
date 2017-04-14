@@ -42,12 +42,12 @@ bRook   = (Piece Black Rook)
 
 -- State data used during the game
 data GameState = GameState {
-    board           :: Board, -- 2D list of Square
+    board           :: Board,         -- 2D list of Square
     boardPoints     :: [BoardSquare], -- display points
-    turn            :: Player, -- PlayerW/PlayerB
-    whiteKing       :: Int, -- white king position
-    blackKing       :: Int, -- black king position
-    startPointIsSet :: Bool, -- True if left click is registered
-    startPoint      :: Int, -- index of start square selected
-    moveEnabled     :: Bool -- True if the user can move
+    turn            :: Player,        -- PlayerW/PlayerB
+    whiteKing       :: Int,           -- white king position
+    blackKing       :: Int,           -- black king position
+    startPointIsSet :: Bool,          -- True if left click is registered
+    startPoint      :: Int,           -- index of start square selected
+    moveEnabled     :: Bool           -- True if the user can move
 } deriving (Show)
