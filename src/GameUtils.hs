@@ -72,8 +72,8 @@ getGameStatus state color =
         (\(l1,l2) -> 
             (\checkList ->
                 (
-                    length(checkList) > 0,
-                    (not (canKingMove state color kingCell)) && (not $ canAttackCheckPiece state color kingCell (l1,l2) checkList)
+                    length(checkList)>0,
+                    (length(checkList)>0) && (not (canKingMove state color kingCell)) && (not $ canAttackCheckPiece state color kingCell (l1,l2) checkList)
                 )
             ) $ filter (\x -> x>= 0) (l1++l2)
         ) $ getCheckPositions state (colorCompliment color) False kingCell
@@ -90,6 +90,7 @@ checkForGameCheck state color firstIteration kingCell =
 
 checkMate :: GameState -> PColor -> Int -> Bool
 checkMate state color kingCell
+    | length l == 0 = False
     | (canKingMove state color kingCell) = False
     | otherwise = not $ canAttackCheckPiece state color kingCell (l1,l2) l
     where
@@ -117,6 +118,7 @@ canAttackCheckPiece state color cell (list1,list2) checkList
   | (length(checkList) == 1) =
     if (length(filter(\x -> x>= 0) (list2)) == 1) then canKillHorse state (colorCompliment color) (checkList !! 0)
     else canBlockCheckPiece state (colorCompliment color) cell (list1,list2) checkList
+canAttackCheckPiece _ _ _ _ _ = True
 
 canKillHorse ::  GameState -> PColor -> Int -> Bool
 canKillHorse state color cell = checkForGameCheck state color True cell
