@@ -6,16 +6,20 @@ import Control.Monad
 vertex3f :: (GLfloat, GLfloat, GLfloat) -> IO ()
 vertex3f (x, y, z) = vertex $ Vertex3 x y z
 
+-- draws a square
 drawSquare :: IO ()
 drawSquare = renderPrimitive Quads $ mapM_ vertex3f
     [(0,0,0),(0,0.25,0),(0.25,0.25,0),(0.25,0,0)]
 
+-- draws a polygon
 drawPolygon :: [(Float,Float,Float)] -> IO ()
 drawPolygon vertices = renderPrimitive Polygon $ mapM_ vertex3f vertices
 
+-- draws outline
 drawLoop :: [(Float,Float,Float)] -> IO ()
 drawLoop vertices = renderPrimitive LineLoop $ mapM_ vertex3f vertices
 
+-- draws a piece
 drawPiece :: (Int, GLfloat) -> IO ()
 drawPiece (p, c) = do
     color $ Color3 c c c
