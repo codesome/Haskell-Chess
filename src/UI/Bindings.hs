@@ -24,7 +24,6 @@ import SocketHandlers
 -- reshape callback
 reshape :: ReshapeCallback
 reshape size =
-    -- viewport $= (Position 0 0, (Size 600 600))
     windowSize $= Size 600 600
 
 -- get row/column from screen x y coordinates
@@ -161,6 +160,7 @@ rightButtonHandler x y gameState sock s = (get gameState) >>= (\gstate ->
             putStr ""
     )
 
+-- to add a message of killing of piece by opponent
 pieceKillMessage :: IORef GameState -> Int -> IO ()
 pieceKillMessage gameState to = 
     (get gameState) >>= (\gstate -> 
@@ -171,6 +171,7 @@ pieceKillMessage gameState to =
         ) $ getSquareAt gstate to
     )
 
+-- move piece and enable move
 opponentMove :: Int -> Int -> GameState -> GameState
 opponentMove from to gameState =  enableMove $ moveFromTo gameState from to
 
@@ -183,7 +184,7 @@ opponentMoveHandlerUtil gameState move =
                 (get gameState) >>= (\gstate -> -- checking updated state for a check
                     (\pcolor -> 
                         (\(check,mate) -> 
-                            if mate
+                            if mate -- checkmate, opponent won
                                 then (gameState $~! disableMove) >>= (\_ -> updateConsole True check mate False )
                                 else updateConsole True check mate False
                         ) $ getGameStatus gstate pcolor
@@ -199,7 +200,11 @@ opponentMoveHandler gameState sock = handleMessage sock $ opponentMoveHandlerUti
 
 -- to handle mouse and keyboard interrupts
 keyboardMouse :: IORef GameState -> Socket -> IORef (String -> IO ()) -> KeyboardMouseCallback
+-- left click
 keyboardMouse gameState _    _      (MouseButton LeftButton) Down _ (Position x y) = gameState $~! (leftButtonHandler x y) 
+-- right click
 keyboardMouse gameState sock sender (MouseButton RightButton)  Down _ (Position x y) = (rightButtonHandler x y gameState sock sender)
+-- 'q' on keyboard
 keyboardMouse _         _    _      (Char 'q')                Down _ _              = exitWith ExitSuccess
+-- ignore rest
 keyboardMouse _ _ _ _ _ _ _ = return ()

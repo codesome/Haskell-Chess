@@ -26,10 +26,10 @@ verifyMove state start end
                     Rook      -> (Rook.verifyMove state start end)
                     otherwise -> False
     where
-        square    = (getSquareAt state start)
-        ptype     = getSquareType square
-        pcolor    = getSquareColor square
-        turn      = getTurn state
+        square    = (getSquareAt state start) -- square at start
+        ptype     = getSquareType square      -- type of square
+        pcolor    = getSquareColor square     -- color of the square
+        turn      = getTurn state             -- player who made the move
         validMove = (start>=0 && start<=63 && end>=0 && end<=63) -- index in range
             && ( -- moved own piece
                 ((turn==PlayerW) && (pcolor==White))
@@ -46,10 +46,10 @@ changePieceFromTo state from to = (\p ->
 -- Move a piece in 'board'
 moveFromTo :: GameState -> Int -> Int -> GameState
 moveFromTo state from to = (\startSquare intermediateState -> 
-        (\newState -> (changePieceFromTo newState from to) ) $
+        (\newState -> (changePieceFromTo newState from to) ) $ -- moving piece on display board
             if (startSquare==wKing)
-                then setWhiteKingPos (setSquareAt intermediateState to startSquare) to
+                then setWhiteKingPos (setSquareAt intermediateState to startSquare) to -- white king was moved
                 else if (startSquare==bKing)
-                    then setBlackKingPos (setSquareAt intermediateState to startSquare) to
+                    then setBlackKingPos (setSquareAt intermediateState to startSquare) to -- black king was moved
                     else setSquareAt intermediateState to startSquare
     ) (getSquareAt state from) (setSquareAt state from (Empty))

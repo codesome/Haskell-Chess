@@ -1,6 +1,8 @@
 # Haskell Chess
 
 ## Install
+`cabal` is required to install.
+
 ```
 $ git clone https://github.com/thecodesome/Haskell-Chess.git
 $ cd Haskell-Chess/

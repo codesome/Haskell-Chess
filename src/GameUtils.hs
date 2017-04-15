@@ -8,14 +8,14 @@ import Data.List
 
 gameUtilsBoard :: Board
 gameUtilsBoard = [
-        [Empty,   Empty,   wQueen,   Empty,   Empty,   Empty,   Empty,   Empty],
+        [Empty,   Empty,   wQueen,  Empty,   Empty,   Empty,   Empty,   Empty],
         [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
         [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   bRook],
         [Empty,   Empty,   Empty,   Empty,   wKing,   Empty,   Empty,   Empty],
+        [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   bRook],
         [bRook,   Empty,   Empty,   Empty,   Empty,   Empty,   bKnight,   Empty],
         [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
-        [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty],
-        [Empty,   Empty,   Empty,   bRook,   Empty,   bRook,   Empty,   Empty]
+        [Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty,   Empty]
     ]
 
 checkGameState :: GameState
@@ -38,6 +38,7 @@ colorCompliment color
 getCheckPositions :: GameState -> PColor ->Bool -> Int -> ([Int],[Int]) --This function will compute a tuple of lists which will cimpute all check positions.
 getCheckPositions state complimentColor firstIteration kingCell = (
         -- all non horse check positions
+         map (\x -> if x==kingCell then -1 else x) $
          map (\x -> x state complimentColor firstIteration kingCell)
             [ (checkLeftColCheck),
               (checkRightColCheck),
@@ -45,11 +46,13 @@ getCheckPositions state complimentColor firstIteration kingCell = (
               (checkUpRowCheck),
               (checkUpperLeftDiagonal),
               (checkLowerLeftDiagonal),
-              (checkUpperRightDiagonal) ,
+              (checkUpperRightDiagonal),
               (checkLowerRightDiagonal)
-            ],
+            ]
+        ++ map (\x -> x state complimentColor kingCell)
+            [(checkPawnCheck7), (checkPawnCheck9)],
         -- all 8 horse check positions
-        map (\x -> x state complimentColor  kingCell)
+        map (\x -> if x==kingCell then -1 else x) $ map (\x -> x state complimentColor  kingCell)
             [ (checkUMidLeftHorseCheck),
               (checkLMidLeftHorseCheck),
               (checkUpperLeftHorseCheck),
@@ -60,7 +63,7 @@ getCheckPositions state complimentColor firstIteration kingCell = (
               (checkLMidRightHorseCheck)
             ]
      )
-
+                                     -- (check,mate)
 getGameStatus :: GameState -> PColor -> (Bool,Bool)
 getGameStatus state color =
     (\kingCell ->
@@ -83,14 +86,15 @@ checkForGameCheck state color firstIteration kingCell =
   let checkList = filter(\x -> x>= 0) (l1++l2) in
   (length(checkList) > 0)
 
-checkMate :: GameState -> PColor -> Int -> Bool --To check if it is a checkmate.
-checkMate state color kingCell
-    | length l == 0 = False -- If the list is empty no check so no checkmate.
-    | (canKingMove state color kingCell) = False --If the king can move then no checkmate
-    | otherwise = not $ canAttackCheckPiece state color kingCell (l1,l2) l --Try to block or kill the attacking piece.
-    where
-        (l1,l2) = getCheckPositions state (colorCompliment color) False kingCell
-        l = filter(\x -> x>= 0) (l1++l2)
+-- checkMate :: GameState -> PColor -> Int -> Bool --To check if it is a checkmate.
+-- checkMate state color kingCell
+--     | length l == 0 = False -- If the list is empty no check so no checkmate.
+--     | (canKingMove state color kingCell) = False --If the king can move then no checkmate
+--     | otherwise = not $ canAttackCheckPiece state color kingCell (l1,l2) l --Try to block or kill the attacking piece.
+--     where
+--         (l1,l2) = getCheckPositions state (colorCompliment color) False kingCell
+--         l = filter(\x -> x>= 0) (l1++l2)
+
 
 canKingMove :: GameState -> PColor -> Int -> Bool --To know whether the king can move.
 canKingMove state color cell =
@@ -119,13 +123,17 @@ canBlockCheckPiece state color cell (list1,list2) checkList --Find the path to b
     | (index == Just 4)  = checkUpperLeftDiagHit  state color r (checkListHead        ) c
     | (index == Just 5)  = checkLowerLeftDiagHit  state color r (checkListHead        ) c
     | (index == Just 6)  = checkUpperRightDiagHit state color r (checkListHead        ) c
-    | otherwise          = checkLowerRightDiagHit state color r (checkListHead        ) c
+    | (index == Just 7)  = checkLowerRightDiagHit state color r (checkListHead        ) c
+    | otherwise          = checkPawnHit           state color checkListHead
     where
         checkListHead = checkList!!0
         index = elemIndex (checkListHead) list1
         r = cell `div` 8
         c = cell `mod` 8
 
+{----------------- Booleans if it can Hit ---------------------}
+checkPawnHit :: GameState -> PColor -> Int -> Bool
+checkPawnHit state color cell = checkForGameCheck state color False cell
 
 checkRightColHit :: GameState -> PColor -> Int -> Int -> Int -> Bool  --Check whether the piece is to the left of the king and so on.
 checkRightColHit state color startRow endCol startCol =
@@ -174,17 +182,38 @@ checkLowerRightDiagHit state color startRow endCell startCol =
       let l = map getCellIndex [(rr,cc) | rr <- [startRow+1,startRow+2..endRow], cc <- [startCol+1,startCol+2..endCol], abs(rr-startRow) == abs(cc-startCol)] in
         foldr (||) False (map (checkForGameCheck state color False) l)
     ) (endCell `div` 8) (endCell `mod` 8)
+{----------------- /Booleans if it can Hit ---------------------}
 
 getCellIndex :: (Int,Int) -> Int --To find the cell from row and column.
 getCellIndex (x,y) = x*8 + y
 
-checkPawnCheck :: GameState -> PColor -> Int -> Int --Check for pawn check.
-checkPawnCheck state color cell
-    | ((cell-7) `div` 8 >= 0 || (cell-9) `div` 8 >= 0) =
-        if (getSquareColor (getSquareAt state (cell-7)) == color && (getSquareType (getSquareAt state  (cell-7))) == Pawn) then (cell-7)
-        else if (getSquareColor (getSquareAt state (cell-9)) == color && (getSquareType (getSquareAt state  (cell-9))) == Pawn) then (cell-9)
-        else -1
+{----------------- Position where it can Hit ---------------------}
+
+checkPawnCheck7 :: GameState -> PColor -> Int -> Int
+checkPawnCheck7 state color cell
+    | checkTopDownHit
+        && (((cell-7) >= 0) && (getSquareAt state (cell-7)) == (Piece color Pawn))
+        = cell-7
+    | (not checkTopDownHit)
+        && (((cell+7) <= 63) && (getSquareAt state (cell+7)) == (Piece color Pawn))
+        = cell+7
     | otherwise = -1
+    where
+        mycolor = if (getTurn state)==PlayerW then White else Black
+        checkTopDownHit = (mycolor/=color)
+
+checkPawnCheck9 :: GameState -> PColor -> Int -> Int
+checkPawnCheck9 state color cell
+    | checkTopDownHit
+        && (((cell-9) >= 0) && (getSquareAt state (cell-9)) == (Piece color Pawn))
+        = cell-9
+    | (not checkTopDownHit)
+        && (((cell+9) <= 63) && (getSquareAt state (cell+9)) == (Piece color Pawn))
+        = cell+9
+    | otherwise = -1
+    where
+        mycolor = if (getTurn state)==PlayerW then White else Black
+        checkTopDownHit = (mycolor/=color)
 
 --All the functions below check for check in one particular direction wiht respect tot he king.
 --All the functions will have a limit like edge cases when we reach the end of a row or a column.
@@ -376,3 +405,4 @@ checkLowerRightHorseCheck state color cell
             if getSquareColor (getSquareAt state (cell+17)) == color && (getSquareType (getSquareAt state (cell+17))) == Knight then (cell+17)
             else -1
      | otherwise = -1
+{----------------- / Position where it can Hit ---------------------}

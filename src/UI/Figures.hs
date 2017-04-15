@@ -1,13 +1,13 @@
-module UI.Figures (drawCube, drawPiece) where
+module UI.Figures (drawSquare, drawPiece) where
  
 import Graphics.UI.GLUT
 import Control.Monad
 
 vertex3f :: (GLfloat, GLfloat, GLfloat) -> IO ()
 vertex3f (x, y, z) = vertex $ Vertex3 x y z
- 
-drawCube :: IO ()
-drawCube = renderPrimitive Quads $ mapM_ vertex3f
+
+drawSquare :: IO ()
+drawSquare = renderPrimitive Quads $ mapM_ vertex3f
     [(0,0,0),(0,0.25,0),(0.25,0.25,0),(0.25,0,0)]
 
 drawPolygon :: [(Float,Float,Float)] -> IO ()
@@ -28,12 +28,19 @@ invertColor c
 
 drawPieceFigure :: Int -> GLfloat -> IO ()
 drawPieceFigure p c
+    -- bishop
     | p==1      = drawBishop c
+    -- king
     | p==2      = do drawKing; color $ invertedColor ; drawKingLoop;
+    -- knight
     | p==3      = drawKnight c
+    -- pawn
     | p==4      = drawPawn c
+    -- queen
     | p==5      = do drawQueen; color $ invertedColor ; drawQueenLoop;
+    -- rook
     | p==6      = do drawRook; color $ invertedColor ; drawRookLoop;
+    -- empty
     | otherwise = putStr ""
     where
         inverted = invertColor c
@@ -49,6 +56,7 @@ rookVertices = [
         -- upper Quad
         [ (0.0625, 0.1875, 0), (0.0625, 0.225, 0), (0.1875, 0.225, 0), (0.1875, 0.1875, 0) ]
     ]
+    
 drawRook :: IO ()
 drawRook = forM_ rookVertices $ drawPolygon
 
